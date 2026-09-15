@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Tambah Pengajuan Kredit</title>
+    </head>
+
+    <body>
+        <h2>Form Pengajuan Kredit Baru (LOS)</h2>
+
+        <form th:action="@{/loans/simpan}" th:object="${loanForm}" method="POST">
+            <div>
+                <label>Nama Calon Debitur:</label>
+                <br>
+                <input type="text" th:field="*{debiturName}" placeholder="Masukkan nama debitur..." required>
+            </div>
+            <br>
+            <div>
+                <label for="">Nominal Pengajuan (Amount):</label>
+                <br>
+                <input type="number" th:field="*{amount}" placeholder="Ex. 7500000..." required>
+            </div>
+            <br>
+            <button type="submit">Submit Pengajuan</button>
+            <a th:href="@{/loans}">Batal Pengajuan</a>
+        </form>
+    </body>
+</html>

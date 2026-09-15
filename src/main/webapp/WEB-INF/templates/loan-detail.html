@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Detail Otorisasi Kredit</title>
+        <link th:href="@{/style.css}" rel="stylesheet">
+    </head>
+
+    <body>
+        
+        <h2>Detail Pengajuan Kredit (Loan Origination System)</h2>
+
+        <table border="1" cellpadding="10" cellspacing="0">
+            <tr>
+                <td><strong>Nama Calon Debitur</strong></td>
+                <td th:text="${loan.debiturName}">Nama</td>
+            </tr>
+            <tr>
+                <td><strong>Nominal Pengajuan</strong></td>
+                <td th:text="'Rp ' + ${#numbers.formatInteger(loan.amount, 3, 'POINT')}">Rp 0</td>
+            </tr>
+            <tr>
+                <td><strong>Status Kredit</strong></td>
+                <td th:text="${loan.status}">PENDING</td>
+            </tr>
+
+            <hr>
+
+            <h3>Additional Information Regarding (Approver)</h3>
+            <p>Udomain User: <strong th:text="${user.udomain}">User</strong></p>
+            <p>Batas Limit Anda: <strong th:text="'Rp ' + ${#numbers.formatInteger(user.approvalLimit, 3, 'POINT')}">Rp 0</strong></p>
+
+            <div th:if="${!isAuthorized}" style="color:red; background-color: #ffcccc; padding: 15px; border: 1px solid red; border-radius: 5px;">
+                You are not authorized to approve this!
+            </div>
+
+            <div th:if="${isAuthorized}">
+                    <div style="color: green; background-color: #d4edda; padding: 15px; border: 1px solid green; border-radius: 5px; margin-bottom: 15px;"> 
+                    You are authorized to approve this!
+            </div>   
+
+            <h3>Form Keputusan Akhir</h3>
+            <form th:action="@{/loans/keputusan}" method="POST">
+
+                <input type="hidden" name="loanId" th:value="${loan.id}">
+                <input type="hidden" name="userId" th:value="${user.id}">
+
+                <div>
+                    <label for="">Catatan Alasan Analisis:</label>
+                    <br>
+                    <textarea name="notes" id="" rows="4" cols="50" placeholder="Ketik hasil analisis anda disini..." required></textarea>
+                </div>
+                <br>
+                <button type="submit" name = "action" value="APPROVED" style="background-color: green; color: white; padding: 5px 15px;">APPROVE</button>
+                <button type="submit" name = "action" value="REJECTED" style="background-color: red; color: white; padding: 5px 15px;">REJECT</button>
+            </form>
+        </div>
+
+        <br>
+        <br>
+        <a th:href="@{/loans}"><- Kembali</a>
+
+        </table> 
+    </body>
+</html>

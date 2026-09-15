@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Login LOS</title>
+        <link th:href="@{/style.css}" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="login-container">
+
+            <div class="login-card">
+                
+                <h2>Login - Loan Origination System</h2>
+                
+                <div class="alert-error" role="alert" th:if="${param.error}">
+                    Invalid Credentials!
+                </div>
+        
+        
+        
+                <form th:action="@{/proses-login}" method="POST">
+                <div class="form-group">
+                    <label for="udomain">Udomain:</label>
+                    <input type="text" name="inputUdomain" placeholder="Enter Udomain..." required>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" name="inputPassword" placeholder="Enter Password..." required>
+                </div>
+                <br>
+                <button type="submit" class="btn-login">Login</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

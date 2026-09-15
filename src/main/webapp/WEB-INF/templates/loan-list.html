@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Daftar Pengajuan Kredit</title>
+        <link th:href="@{/style.css}" rel="stylesheet">
+    </head>
+
+    <body>
+
+        <nav class="navbar">
+            <div class="navbar-logo">LOS [Pollos]</div>
+            <div class="navbar-menu">
+                <a th:href="@{/dashboard}">Dashboard</a>
+                <a th:href="@{/loans}">Loan Lists</a>
+            </div>
+        </nav>
+        <h2></h2>
+        <div class="container">
+
+            <div class="card-table">
+                <div class="card-table-header">
+                    Dashboard Monitoring Pengajuan Kredit
+                </div>
+                <div class="card-table-body">
+                    <a th:href="@{/loans/tambah}"
+                    th:if="${userRole == 'ROLE_OPERATOR'}">
+                    + Tambah Pengajuan Baru
+                    </a>
+                    
+                    <table class="custom-table">
+                        <thead>
+                            <tr style="background-color: rgb(205, 252, 255);">
+                                <th>ID</th>
+                                <th>Nama Debitur</th>
+                                <th>Nominal Pengajuan</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                        <tr th:each="l: ${loans}">
+                            <td th:text="${l.id}">1</td>
+                            <td th:text="${l.debiturName}">John Smith</td>
+                            <td th:text="'Rp ' + ${#numbers.formatInteger(l.amount, 3, 'POINT')}">Rp 0</td>
+                            <td th:text="${l.status}">PENDING</td>
+                            <td>
+                                <a th:href="@{/loans/detail/{id}(id=${l.id})}"
+                                th:if="${userRole == 'ROLE_APPROVER'}" 
+                                class="btn-action-proses">
+                                Proses Form
+                                </a>
+            
+                                <a th:href="@{/loans/hapus/{id}(id=${l.id})}"
+                                th:if="${userRole == 'ROLE_OPERATOR'}" 
+                                onclick="return confirm('Apakah Anda yakin ingin menghapus data pengajuan ini?')"
+                                class="btn-action-hapus">
+                                Hapus
+                                </a>
+                            </td>
+                        </tr>
+            
+                        <tr th:if="${#lists.isEmpty(loans)}">
+                            <td colspan="5" style="text-align: center; color: gray;">Belum ada data pengajuan kredit.</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+    </body>
+</html>

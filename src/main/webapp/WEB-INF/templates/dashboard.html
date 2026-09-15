@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dashboard LOS</title>
+        <link th:href="@{/style.css}" rel="stylesheet">
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <div class="navbar-logo">LOS [Pollos]</div>
+
+
+            <div class="navbar-menu">
+                <a th:href="@{/dashboard}">Dashboard</a>
+                <a th:href="@{/loans}">Loan Lists</a>
+            </div>
+        </nav>
+
+            <div class="content-center">
+                <h1>Hello, <span th:text="${session.userAktif}">User</span>!</h1>
+            </div>
+    </body>
+</html>
