@@ -15,18 +15,22 @@
                 <div class="alert-error" role="alert" th:if="${param.error}">
                     Invalid Credentials!
                 </div>
+                
+
+                <div class="alert-success" role="alert" th:if="${param.logout}" style="color: green; font-weight: bold; margin-bottom: 10px;">
+                    Anda berhasil keluar!
+                </div>
         
         
-        
-                <form th:action="@{/proses-login}" method="POST">
+                <form th:action="@{/login}" method="POST">
                 <div class="form-group">
                     <label for="udomain">Udomain:</label>
-                    <input type="text" name="inputUdomain" placeholder="Enter Udomain..." required>
+                    <input type="text" id="username" name="username" placeholder="Enter Udomain..." required>
                 </div>
                 <br>
                 <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" name="inputPassword" placeholder="Enter Password..." required>
+                    <input type="password" id="password" name="password" placeholder="Enter Password..." required>
                 </div>
                 <br>
                 <button type="submit" class="btn-login">Login</button>

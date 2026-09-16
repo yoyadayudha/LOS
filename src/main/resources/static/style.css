@@ -227,3 +227,36 @@ body {
     background-color: #ff7675;
     color: #ffffff;
 }
+
+.content-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    text-align: center;
+    flex-direction: column;
+}
+
+.content-center h1 {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    color: #2c3e50;
+}
+
+.btn-logout-nav {
+    background: none;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+.btn-logout-nav:hover {
+    background-color: #e74c3c;
+    color: #ffffff;
+}

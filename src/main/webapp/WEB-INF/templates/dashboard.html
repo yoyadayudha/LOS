@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://thymeleaf.org">
     <head>
         <meta charset="UTF-8">
         <title>Dashboard LOS</title>
@@ -10,15 +10,21 @@
         <nav class="navbar">
             <div class="navbar-logo">LOS [Pollos]</div>
 
-
             <div class="navbar-menu">
-                <a th:href="@{/dashboard}">Dashboard</a>
+                <a th:href="@{/applications/dashboard}">Dashboard</a>
                 <a th:href="@{/loans}">Loan Lists</a>
+            
+                <form th:action="@{/logout}" method="POST" style="display: inline;">
+                    <button type="submit" class="btn-logout-nav">Logout</button>
+                </form>
             </div>
         </nav>
 
-            <div class="content-center">
-                <h1>Hello, <span th:text="${session.userAktif}">User</span>!</h1>
+        <div class="content-center">
+            <div>
+                <h1>Hello, <span th:text="${currentUser.username}">User</span>!</h1>
+                <p>Role Anda: <span class="badge badge-approved" th:text="${currentUser.assignedRoles}">[ROLE]</span></p>
             </div>
+        </div>
     </body>
 </html>
