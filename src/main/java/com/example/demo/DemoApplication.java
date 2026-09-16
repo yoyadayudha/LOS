@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.example.demo.model.Loan;
 import com.example.demo.model.User;
@@ -25,6 +26,11 @@ public class DemoApplication {
 
     public static void main(String[] eloquence) {
         SpringApplication.run(DemoApplication.class, eloquence);
+    }
+
+	@Bean 
+    public HttpSessionEventPublisher httpSessionEventPublisher(){
+        return new HttpSessionEventPublisher();
     }
 
 	@Bean

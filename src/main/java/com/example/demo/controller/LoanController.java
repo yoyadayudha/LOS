@@ -3,15 +3,19 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import com.example.demo.dto.LoanResponseDTO;
 import com.example.demo.model.Loan;
 import com.example.demo.model.LoanApproval;
 import com.example.demo.model.User;
 import com.example.demo.repository.LoanApprovalRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.LoanService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -29,28 +33,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoanController {
     
     @Autowired 
-    private LoanRepository loanRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired 
-    private LoanApprovalRepository loanApprovalRepository;
+    private LoanService loanService;
 
     @GetMapping("/loans")
     public String listLoans(Model model, HttpSession session) {
-        List<Loan> daftarLoan = loanRepository.findAll();
-        model.addAttribute("loans", daftarLoan);
+        List<LoanResponseDTO> loanResponseDTOs = loanService.getAllLoans();
+        model.addAttribute("loans", loanResponseDTOs);
 
-        String usernameDariSession = (String) session.getAttribute("userAktif");
-
-        User userLogin = userRepository.findByUdomain(usernameDariSession);
-
-        if (userLogin != null){
-            model.addAttribute("userRole", userLogin.getRole());
-        }else{
-            model.addAttribute("userRole", "ROLE_OPERATOR");
-        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("userRole", auth.getAuthorities().toString());
 
         return "loan-list";
     }
@@ -64,42 +55,27 @@ public class LoanController {
     @PostMapping("/loans/simpan")
     public String simpanLoan(@ModelAttribute("loanForm") Loan loan) {
         //TODO: process POST request
-        loan.setStatus("PENDING");
-        loan.setCreatedBy(1);
-
-        loanRepository.save(loan);
+        loanService.createNewLoan(loan);
         return "redirect:/loans";
     }
     
     @GetMapping("/loans/hapus/{id}")
     public String hapusLoan(@PathVariable("id") Integer id) {
-        loanRepository.deleteById(id);
+        loanService.deleteLoanById(id);
         return "redirect:/loans";
     }
     
     @GetMapping("/loans/detail/{id}")
     public String detailLoan(@PathVariable("id") Integer id, Model model,  HttpSession session) {
-        Loan loan = loanRepository.findById(id).orElseThrow();
-        
-        String usernameDariSession = (String) session.getAttribute("userAktif");
-        User userLogin = userRepository.findByUdomain(usernameDariSession);
-        
-        if(userLogin == null){
-            userLogin = new User();
-            userLogin.setUdomain("Guest");
-            userLogin.setApprovalLimit(0L);
-        }
+        LoanResponseDTO loanDTO = loanService.getLoanDetailForCurUser(id);
 
-        boolean bolehProses = loan.getAmount() <= userLogin.getApprovalLimit();
-
-        model.addAttribute("loan", loan);
-        model.addAttribute("user", userLogin);
-        model.addAttribute("isAuthorized", bolehProses);
+        model.addAttribute("user", loanDTO);
+        model.addAttribute("isAuthorized", loanDTO.isAuthorizedToApprove());
 
         return "loan-detail";
     }
 
-    @Transactional
+   
     @PostMapping("/loans/keputusan")
     public String prosesKeputusan(
         @RequestParam("loanId") Integer loanId,
@@ -107,20 +83,7 @@ public class LoanController {
         @RequestParam("action") String action,
         @RequestParam("notes") String notes
     ) {
-        Loan loan = loanRepository.findById(loanId).orElseThrow();
-        User user = userRepository.findById(userId).orElseThrow();
-
-        loan.setStatus(action);
-        loanRepository.saveAndFlush(loan);
-
-        LoanApproval logbaru = new LoanApproval();
-
-        logbaru.setLoan(loan);
-        logbaru.setUser(user);
-        logbaru.setAction(action);
-        logbaru.setNotes(notes);
-
-        loanApprovalRepository.saveAndFlush(logbaru);
+        loanService.submitApprovalDecision(loanId, action, notes);
 
         return "redirect:/loans";
     }

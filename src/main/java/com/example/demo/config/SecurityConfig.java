@@ -76,7 +76,7 @@ public class SecurityConfig {
 
         .logout(logout -> logout
             .logoutUrl("/logout")
-
+            
             .invalidateHttpSession(true)
 
             .clearAuthentication(true)
@@ -91,9 +91,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean 
-    public HttpSessionEventPublisher httpSessionEventPublisher(){
-        return new HttpSessionEventPublisher();
-    }
+    
 
 }
