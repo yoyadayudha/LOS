@@ -48,16 +48,21 @@
                             <td th:text="${loan.id}">1</td>
                             <td th:text="${loan.borrowerName}">John Smith</td>
                             <td th:text="'Rp ' + ${#numbers.formatInteger(loan.amount, 3, 'POINT')}">Rp 0</td>
-                            <td th:text="${loan.status}  == 'PENDING' ? 'badge badge-pending' : (loan.status == 'APPROVED' ? 'badge badge-approved' : 'badge badge-rejected')">PENDING</td>
+                        <td>
+                            <span th:text="${loan.status}"
+                                th:class="${loan.status == 'PENDING' ? 'badge badge-pending' : (loan.status == 'APPROVED' ? 'badge badge-approved' : 'badge badge-rejected')}">
+                                PENDING
+                            </span>
+                        </td>
                             <td>
                                 <a th:href="@{/loans/detail/{id}(id=${loan.id})}"
-                                th:if="${userRole == 'ROLE_APPROVER'}" 
+                                th:if="${userRole.contains('APPROVER')}"
                                 class="btn-action-proses">
                                 Proses Form
                                 </a>
             
                                 <a th:href="@{/loans/hapus/{id}(id=${loan.id})}"
-                                th:if="${userRole == 'ROLE_OPERATOR'}" 
+                                th:if="${userRole.contains('OPERATOR')}" 
                                 onclick="return confirm('Apakah Anda yakin ingin menghapus data pengajuan ini?')"
                                 class="btn-action-hapus">
                                 Hapus
