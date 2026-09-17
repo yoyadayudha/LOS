@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.example.demo.model.Loan;
@@ -38,11 +39,15 @@ public class DemoApplication {
 		return args -> {
 			if (userRepository.count() == 0){
 
+				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+				String securePassword = encoder.encode("password123");
+
 				//Operator
 				User op = new User();
 				op.setId(0);
 				op.setUdomain("operator1");
-				op.setPassword("password123");
+				op.setPassword(securePassword);
 				op.setRole("ROLE_OPERATOR");
 				op.setApprovalLimit(0L);
 				userRepository.save(op);
@@ -51,7 +56,7 @@ public class DemoApplication {
 				User app1 = new User();
 				app1.setId(1);
 				app1.setUdomain("approver1");
-				app1.setPassword("password123");
+				app1.setPassword(securePassword);
 				app1.setRole("ROLE_APPROVER");
 				app1.setApprovalLimit(50000000L);
 				userRepository.save(app1);
@@ -60,7 +65,7 @@ public class DemoApplication {
 				User app2 = new User();
 				app2.setId(2);
 				app2.setUdomain("approver2");
-				app2.setPassword("password123");
+				app2.setPassword(securePassword);
 				app2.setRole("ROLE_APPROVER");
 				app2.setApprovalLimit(250000000L);
 				userRepository.save(app2);
@@ -69,7 +74,7 @@ public class DemoApplication {
 				User app3 = new User();
 				app3.setId(3);
 				app3.setUdomain("approver3");
-				app3.setPassword("password123");
+				app3.setPassword(securePassword);
 				app3.setRole("ROLE_APPROVER");
 				app3.setApprovalLimit(1000000000L);
 				userRepository.save(app3);

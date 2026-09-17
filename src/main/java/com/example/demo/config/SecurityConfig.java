@@ -47,9 +47,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
 
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+
             .authorizeHttpRequests(auth -> auth
                 
-            .requestMatchers("/login", "/style.css").permitAll()
+            .requestMatchers("/login", "/style.css", "/h2-console/**").permitAll()
 
             .requestMatchers("/applications/**").authenticated()
             

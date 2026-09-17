@@ -13,7 +13,7 @@
         <table border="1" cellpadding="10" cellspacing="0">
             <tr>
                 <td><strong>Nama Calon Debitur</strong></td>
-                <td th:text="${loan.debiturName}">Nama</td>
+                <td th:text="${loan.borrowerName}">Nama</td>
             </tr>
             <tr>
                 <td><strong>Nominal Pengajuan</strong></td>
@@ -26,9 +26,7 @@
 
             <hr>
 
-            <h3>Additional Information Regarding (Approver)</h3>
-            <p>Udomain User: <strong th:text="${user.udomain}">User</strong></p>
-            <p>Batas Limit Anda: <strong th:text="'Rp ' + ${#numbers.formatInteger(user.approvalLimit, 3, 'POINT')}">Rp 0</strong></p>
+            <h3>Information Regarding (Approver)</h3>
 
             <div th:if="${!isAuthorized}" style="color:red; background-color: #ffcccc; padding: 15px; border: 1px solid red; border-radius: 5px;">
                 You are not authorized to approve this!
@@ -43,7 +41,6 @@
             <form th:action="@{/loans/keputusan}" method="POST">
 
                 <input type="hidden" name="loanId" th:value="${loan.id}">
-                <input type="hidden" name="userId" th:value="${user.id}">
 
                 <div>
                     <label for="">Catatan Alasan Analisis:</label>

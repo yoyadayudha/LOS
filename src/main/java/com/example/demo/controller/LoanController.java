@@ -69,7 +69,7 @@ public class LoanController {
     public String detailLoan(@PathVariable("id") Integer id, Model model,  HttpSession session) {
         LoanResponseDTO loanDTO = loanService.getLoanDetailForCurUser(id);
 
-        model.addAttribute("user", loanDTO);
+        model.addAttribute("loan", loanDTO);
         model.addAttribute("isAuthorized", loanDTO.isAuthorizedToApprove());
 
         return "loan-detail";
@@ -79,7 +79,7 @@ public class LoanController {
     @PostMapping("/loans/keputusan")
     public String prosesKeputusan(
         @RequestParam("loanId") Integer loanId,
-        @RequestParam("userId") Integer userId,
+        // @RequestParam("userId") Integer userId,
         @RequestParam("action") String action,
         @RequestParam("notes") String notes
     ) {
