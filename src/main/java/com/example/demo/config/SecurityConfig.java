@@ -30,19 +30,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder){
-        String hashedPwd = encoder.encode("password123");
-
-        UserDetails operator = User.builder().username("operator1").password(hashedPwd).roles("OPERATOR").build();
-        UserDetails analyst = User.builder().username("analis1").password(hashedPwd).roles("ANALYST").build();
-        UserDetails approver1 = User.builder().username("approver1").password(hashedPwd).roles("APPROVER").build();
-        UserDetails approver2 = User.builder().username("approver2").password(hashedPwd).roles("APPROVER").build();
-        UserDetails approver3 = User.builder().username("approver3").password(hashedPwd).roles("APPROVER").build();
-
-        return new InMemoryUserDetailsManager(operator, analyst, approver1, approver2, approver3);
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())

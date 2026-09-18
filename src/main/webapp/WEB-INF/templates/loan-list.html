@@ -29,7 +29,7 @@
                 </div>
                 <div class="card-table-body">
                     <a th:href="@{/loans/tambah}"
-                    th:if="${userRole == 'ROLE_OPERATOR'}">
+                    th:if="${#strings.contains(userRole, 'OPERATOR')}">
                     + Tambah Pengajuan Baru
                     </a>
                     

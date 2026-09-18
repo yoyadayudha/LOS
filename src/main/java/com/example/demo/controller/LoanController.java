@@ -27,12 +27,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
-@Controller 
+@Controller
 public class LoanController {
     
-    @Autowired 
+    @Autowired
     private LoanService loanService;
 
     @GetMapping("/loans")
@@ -75,7 +73,6 @@ public class LoanController {
         return "loan-detail";
     }
 
-   
     @PostMapping("/loans/keputusan")
     public String prosesKeputusan(
         @RequestParam("loanId") Integer loanId,

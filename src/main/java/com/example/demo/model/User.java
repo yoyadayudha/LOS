@@ -1,8 +1,15 @@
 package com.example.demo.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+
+import java.util.List;
+
 import jakarta.persistence.Column;
 
 @Entity
@@ -12,13 +19,20 @@ public class User {
     @Id
     private Integer id;
     
+    @Column (unique = true)
     private String udomain;
+
     private String password;
-    private String role;
-    
-    @Column(name = "approval_limit")
-    private Long approvalLimit;
-    
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_role",
+        joinColumns = @JoinColumn (name = "user_id"),
+        inverseJoinColumns = @JoinColumn (name = "role_id")
+    )
+
+    private List<Role> roles;
+
     public Integer getId() {
         return id;
     }
@@ -43,21 +57,14 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
-    public Long getApprovalLimit() {
-        return approvalLimit;
-    }
-
-    public void setApprovalLimit(Long approvalLimit) {
-        this.approvalLimit = approvalLimit;
-    }
 
     
 }

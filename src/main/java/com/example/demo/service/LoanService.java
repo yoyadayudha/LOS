@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.LoanResponseDTO;
 import com.example.demo.model.Loan;
 import com.example.demo.model.LoanApproval;
+import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.LoanApprovalRepository;
 import com.example.demo.repository.LoanRepository;
@@ -49,21 +50,25 @@ public class LoanService {
 
         User userInDb = userRepository.findByUdomain(currUsername);
         
-        Long userApprovalLimit = 0L;
+        Long maxUserApprovalLimit = 0L;
+        boolean isApprover = false;
 
         if(userInDb != null){
-            userApprovalLimit = userInDb.getApprovalLimit();
+            
+            for (Role role : userInDb.getRoles()){
+                if(role.getRoleName().startsWith("ROLE_APPROVER")) {
+                    isApprover = true;
+
+                    if(role.getApprovalLimit() > maxUserApprovalLimit){
+                        maxUserApprovalLimit = role.getApprovalLimit();
+                    }
+                }
+            }
         }
 
-        if(currUsername.equals("approver1")){
-            userApprovalLimit = 50000000L;
-        }else if(currUsername.equals("approver2")){
-            userApprovalLimit = 250000000L;
-        }else if(currUsername.equals("approver3")){
-            userApprovalLimit = 1000000000L;
-        }
 
-        boolean bolehProses = loan.getAmount() <= userApprovalLimit;
+        boolean bolehProses = isApprover && (loan.getAmount() <= maxUserApprovalLimit);
+
 
         return new LoanResponseDTO(loan.getId(), loan.getDebiturName(), loan.getAmount(), loan.getStatus(), bolehProses);
         
