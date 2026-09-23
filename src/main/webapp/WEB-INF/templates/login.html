@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Login LOS</title>
+        <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
         <link th:href="@{/style.css}" rel="stylesheet">
-        <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
     </head>
     <body>
         <div class="login-container">
@@ -12,30 +14,27 @@
                 
                 <h2>Login - Loan Origination System</h2>
                 
-                <div class="alert alert-danger" role="alert">
-                    Password Salah!
+                <div class="alert alert-danger" role="alert" th:if="${param.error}">
+                    Udomain atau password salah!
                 </div>
-                
 
-                <div class="alert-success" role="alert" th:if="${param.logout}" style="color: green; font-weight: bold; margin-bottom: 10px;">
+                <div class="alert alert-success" role="alert" th:if="${param.logout}">
                     Anda berhasil keluar!
                 </div>
         
-        
                 <form th:action="@{/login}" method="POST">
-                <div class="form-group">
-                    <label for="udomain">Udomain:</label>
-                    <input type="text" id="username" name="username" placeholder="Enter Udomain..." required>
-                </div>
-                <br>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" placeholder="Enter Password..." required>
-                </div>
-                <br>
-                <button type="submit" class="btn-login">Login</button>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Udomain:</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter Udomain..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-login">Login</button>
                 </form>
             </div>
         </div>
+        <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
     </body>
 </html>
