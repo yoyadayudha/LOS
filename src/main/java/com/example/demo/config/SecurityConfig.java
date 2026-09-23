@@ -15,7 +15,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 
-@EnableWebSecurity 
+@EnableWebSecurity
 public class SecurityConfig {
     
     private final HttpSessionEventPublisher httpSessionEventPublisher;
@@ -24,7 +24,7 @@ public class SecurityConfig {
         this.httpSessionEventPublisher = httpSessionEventPublisher;
     }
 
-    @Bean 
+    @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
@@ -52,7 +52,7 @@ public class SecurityConfig {
 
             .defaultSuccessUrl("/applications/dashboard", true)
 
-            .failureUrl("/login?error+true")
+            .failureUrl("/login?error=true")
 
             .permitAll()
         )
@@ -60,7 +60,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session
             .maximumSessions(1)
 
-            .maxSessionsPreventsLogin(false)
+            .maxSessionsPreventsLogin(true)
         )
 
         .logout(logout -> logout

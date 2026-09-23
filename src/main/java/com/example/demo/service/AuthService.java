@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UserResponseDTO;;
 
-@Service 
+@Service
 public class AuthService {
     public UserResponseDTO getCurrentUser(){
 

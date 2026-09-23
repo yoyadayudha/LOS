@@ -5,8 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.model.Loan;
 
-@Repository 
+@Repository
 public interface LoanRepository extends JpaRepository<Loan, Integer>{
 
-    
 }

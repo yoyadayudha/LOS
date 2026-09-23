@@ -20,7 +20,7 @@ import com.example.demo.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
-@Service 
+@Service
 public class LoanService {
     
     @Autowired

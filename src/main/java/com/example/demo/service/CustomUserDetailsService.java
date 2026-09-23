@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
-@Service 
+@Service
 public class CustomUserDetailsService implements UserDetailsService{
     
-    @Autowired 
+    @Autowired
     private UserRepository userRepository;
 
-    @Override 
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
 
         User user = userRepository.findByUdomain(username);

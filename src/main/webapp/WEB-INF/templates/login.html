@@ -3,6 +3,7 @@
     <head>
         <title>Login LOS</title>
         <link th:href="@{/style.css}" rel="stylesheet">
+        <link th:href="@{/css/bootstrap.css}" rel="stylesheet">
     </head>
 
     <body>
@@ -12,8 +13,8 @@
                 
                 <h2>Login - Loan Origination System</h2>
                 
-                <div class="alert-error" role="alert" th:if="${param.error}">
-                    Invalid Credentials!
+                <div class="alert alert-danger" role="alert">
+                    Password Salah!
                 </div>
                 
 
