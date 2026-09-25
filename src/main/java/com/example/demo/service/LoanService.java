@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.LoanResponseDTO;
+import com.example.demo.model.ApplicationStatus;
 import com.example.demo.model.Loan;
 import com.example.demo.model.LoanApproval;
 import com.example.demo.model.Role;
@@ -37,7 +38,7 @@ public class LoanService {
 
         return loans.stream().map(loan -> {
 
-            return new LoanResponseDTO(loan.getId(), loan.getDebiturName(), loan.getAmount(), loan.getStatus(), false);
+            return new LoanResponseDTO(loan.getId(), loan.getDebtor().getFullName(), loan.getRequestedAmount(), loan.getStatus().name(), false);
         }).collect(Collectors.toList());
     }
 
@@ -67,15 +68,16 @@ public class LoanService {
         }
 
 
-        boolean bolehProses = isApprover && (loan.getAmount() <= maxUserApprovalLimit);
+        boolean bolehProses = isApprover && (loan.getRequestedAmount()
+                                            .compareTo(BigDecimal.valueOf(maxUserApprovalLimit)) <= 0);
 
 
-        return new LoanResponseDTO(loan.getId(), loan.getDebiturName(), loan.getAmount(), loan.getStatus(), bolehProses);
+        return new LoanResponseDTO(loan.getId(), loan.getDebtor().getFullName(),loan.getRequestedAmount(), loan.getStatus().name(), bolehProses);
         
     }
 
     public void createNewLoan(Loan loan){
-        loan.setStatus("PENDING");
+        loan.setStatus(ApplicationStatus.DRAFT);
         loan.setCreatedBy(1);
         loanRepository.save(loan);
     }
@@ -88,7 +90,7 @@ public class LoanService {
     public void submitApprovalDecision(Integer loanId, String action, String notes){
         Loan loan = loanRepository.findById(loanId).orElseThrow();
 
-        loan.setStatus(action);
+        loan.setStatus(ApplicationStatus.valueOf(action));
         loanRepository.saveAndFlush(loan);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -1,13 +1,15 @@
 package com.example.demo.dto;
 
+import java.math.BigDecimal;
+
 public class LoanResponseDTO {
     private Integer id;
     private String borrowerName;
-    private Long amount;
+    private BigDecimal amount;
     private String status;
     private boolean authorizedToApprove;
 
-    public LoanResponseDTO(Integer id, String borrowerName, Long amount, String status, boolean authorizedToApprove) {
+    public LoanResponseDTO(Integer id, String borrowerName, BigDecimal amount, String status, boolean authorizedToApprove) {
         this.id = id;
         this.borrowerName = borrowerName;
         this.amount = amount;
@@ -31,11 +33,11 @@ public class LoanResponseDTO {
         this.borrowerName = borrowerName;
     }
 
-    public Long getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
