@@ -1,5 +1,9 @@
 package com.example.demo;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Arrays;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,20 +12,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import com.example.demo.model.ApplicationStatus;
+import com.example.demo.model.Debtor;
+import com.example.demo.model.Gender;
 import com.example.demo.model.Loan;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
-import com.example.demo.model.Debtor;
-import com.example.demo.model.Gender;
-import com.example.demo.model.ApplicationStatus;
+import com.example.demo.repository.DebtorRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.repository.DebtorRepository;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Arrays;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.example.demo.repository")
