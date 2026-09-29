@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,12 +11,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.dto.LoanResponseDTO;
 import com.example.demo.model.ApplicationStatus;
+import com.example.demo.model.Debtor;
 import com.example.demo.model.Loan;
 import com.example.demo.model.LoanApproval;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
+import com.example.demo.repository.DebtorRepository;
 import com.example.demo.repository.LoanApprovalRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.UserRepository;
@@ -32,6 +37,9 @@ public class LoanService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired 
+    private DebtorRepository debtorRepository;
 
     public List<LoanResponseDTO> getAllLoans() {
         List<Loan> loans = loanRepository.findAll();
@@ -74,6 +82,92 @@ public class LoanService {
 
         return new LoanResponseDTO(loan.getId(), loan.getDebtor().getFullName(),loan.getRequestedAmount(), loan.getStatus().name(), bolehProses);
         
+    }
+
+    private String generateApplicationNumber(){
+
+        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        long countToday = loanRepository.count() + 1;
+
+        String sequencePart = String.format("%05d", countToday );
+
+        return "APP-" + datePart + "-" + sequencePart;
+    }
+
+    private Debtor upsertDebtor(ApplicationFormRequestDTO dto) {
+        
+        Debtor debtor = debtorRepository.findById(dto.getNik()).orElse(new Debtor());
+
+        debtor.setNik(dto.getNik());
+        debtor.setFullName(dto.getFullName());
+        debtor.setEmail(dto.getEmail());
+        debtor.setPhone(dto.getPhone());
+        debtor.setBirthDate(dto.getBirthDate());
+        debtor.setGender(dto.getGender());
+        debtor.setAddress(dto.getAddress());
+
+        return debtorRepository.save(debtor);
+
+
+    }
+
+    private Loan mapDtoToLoan(ApplicationFormRequestDTO dto, ApplicationStatus status){
+
+        Debtor debtor = upsertDebtor(dto);
+
+        Loan loan = (dto.getLoanId() != null)
+                    ? loanRepository.findById(dto.getLoanId()). orElse(new Loan())
+                    : new Loan();
+
+        loan.setDebtor(debtor);
+        loan.setCompanyName(dto.getCompanyName());
+        loan.setEmploymentType(dto.getEmploymentType());
+        loan.setWorkDurationMonths(dto.getWorkDurationMonths());
+        loan.setMonthlyIncome(dto.getMonthlyIncome());
+        loan.setExistingInstallments(dto.getExistingInstallments());
+        loan.setProductType(dto.getProductType());
+        loan.setRequestedAmount(dto.getRequestedAmount());
+        loan.setTenorMonths(dto.getTenorMonths());
+        loan.setInterestScheme(dto.getInterestScheme());
+        loan.setLoanPurpose(dto.getLoanPurpose());
+        loan.setHasCollateral(dto.getHasCollateral());
+        loan.setCollateralType(dto.getCollateralType());
+        loan.setCollateralValue(dto.getCollateralValue());
+        loan.setStatus(status);
+
+        if(loan.getApplicationNumber() == null){
+            loan.setApplicationNumber(generateApplicationNumber());
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currUser = userRepository.findByUdomain(auth.getName());
+
+        if(currUser != null){
+            loan.setCreatedBy(currUser.getId());
+        }
+
+
+        return loan;
+        
+    }
+
+    @Transactional 
+    public Loan saveDraft(ApplicationFormRequestDTO dto){
+
+        Loan loan = mapDtoToLoan(dto, ApplicationStatus.DRAFT);
+
+     
+        return loanRepository.save(loan);
+        
+    }
+
+    @Transactional 
+    public Loan submitApplication(ApplicationFormRequestDTO dto){
+
+        Loan loan = mapDtoToLoan(dto, ApplicationStatus.SUBMITTED);
+        return loanRepository.save(loan);
+
     }
 
     public void createNewLoan(Loan loan){

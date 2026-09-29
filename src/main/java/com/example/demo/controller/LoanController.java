@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -8,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.dto.LoanResponseDTO;
 import com.example.demo.model.Loan;
 import com.example.demo.model.LoanApproval;
@@ -16,8 +18,12 @@ import com.example.demo.repository.LoanApprovalRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.LoanService;
+import com.example.demo.validation.OnDraft;
+import com.example.demo.validation.OnSubmit;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Controller
 public class LoanController {
     
+    @Autowired 
+    private Validator validator;
+
     @Autowired
     private LoanService loanService;
 
@@ -45,17 +54,44 @@ public class LoanController {
     }
 
     @GetMapping("/loans/tambah")
-    public String formTambahLoan(Model model) {
-        model.addAttribute("loanForm", new Loan());
-        return "loan-form";
+    public String formTambahPengajuan(Model model) {
+        model.addAttribute("applicationForm", new ApplicationFormRequestDTO());
+        return "loan-application-form";
     }
 
-    @PostMapping("/loans/simpan")
-    public String simpanLoan(@ModelAttribute("loanForm") Loan loan) {
+    @PostMapping("/loans/simpan-pengajuan")
+    public String simpanPengajuan(
+        @ModelAttribute("applicationForm") ApplicationFormRequestDTO dto,
+        @RequestParam String mode,
+        Model model) {
         //TODO: process POST request
-        loanService.createNewLoan(loan);
+        Set<ConstraintViolation<ApplicationFormRequestDTO>> violations;
+        
+
+        if(mode.equals("submit")) {
+            violations = validator.validate(dto, OnSubmit.class);
+        }else{
+            violations = validator.validate(dto, OnDraft.class);
+        }
+
+
+        if(!violations.isEmpty()) {
+            model.addAttribute("violations", violations);
+            model.addAttribute("applicationForm", dto);
+            return "loan-application-form";
+        }
+
+        if(mode.equals("submit")){
+            loanService.submitApplication(dto);
+        }else{
+            loanService.saveDraft(dto);
+        }
+
         return "redirect:/loans";
+
+        
     }
+    
     
     @GetMapping("/loans/hapus/{id}")
     public String hapusLoan(@PathVariable("id") Integer id) {

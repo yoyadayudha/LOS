@@ -20,6 +20,17 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column (name = "application_number", unique = true)
+    private String applicationNumber;
+
+    public String getApplicationNumber() {
+        return applicationNumber;
+    }
+
+    public void setApplicationNumber(String applicationNumber) {
+        this.applicationNumber = applicationNumber;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "debtor_nik", referencedColumnName = "nik")
     private Debtor debtor;

@@ -4,8 +4,14 @@ import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.model.CollateralType;
 import com.example.demo.model.ProductType;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Arrays;
+import java.util.List;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 
 public class LoanApplicationValidator implements ConstraintValidator<ValidLoanApplication, ApplicationFormRequestDTO> {
     
@@ -72,6 +78,31 @@ public class LoanApplicationValidator implements ConstraintValidator<ValidLoanAp
 
                 isValid = false;
             }
+        }
+
+        if(dto.getBirthDate() != null){
+
+            int age = Period.between(dto.getBirthDate(), LocalDate.now() ).getYears();
+
+            if( age < 21 || age > 65){
+                context.buildConstraintViolationWithTemplate("Usia debitur harus 21-65 tahun")
+                .addPropertyNode("birthDate")
+                .addConstraintViolation();
+
+                isValid = false;
+            }
+
+        }
+
+        List<Integer> allowedTenors = Arrays.asList(6, 12, 18, 24, 36, 60, 120, 180);
+
+        if(dto.getTenorMonths() != null && !allowedTenors.contains(dto.getTenorMonths())){
+            context.buildConstraintViolationWithTemplate("Tenor wajib salah satu dari: 6, 12, 18, 24, 36, 60, 120, 180 bulan")
+            .addPropertyNode("tenorMonths")
+            .addConstraintViolation();
+
+            isValid = false;
+
         }
 
 
