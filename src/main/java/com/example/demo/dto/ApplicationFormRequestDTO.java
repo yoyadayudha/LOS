@@ -5,6 +5,7 @@ import com.example.demo.model.EmploymentType;
 import com.example.demo.model.ProductType;
 import com.example.demo.validation.OnDraft;
 import com.example.demo.validation.OnSubmit;
+import com.example.demo.validation.ValidLoanApplication;
 import com.example.demo.model.InterestScheme;
 import com.example.demo.model.CollateralType;
 
@@ -21,7 +22,7 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
+@ValidLoanApplication (groups = {OnSubmit.class})
 public class ApplicationFormRequestDTO {
     private Integer loanId;
 
