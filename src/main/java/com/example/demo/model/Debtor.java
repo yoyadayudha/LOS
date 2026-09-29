@@ -9,11 +9,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-@Entity 
+@Entity
 @Table(name = "debtors")
 public class Debtor {
     
-    @Id 
+    @Id
     @Column(name = "nik", length = 16, nullable = false)
     private String nik;
 

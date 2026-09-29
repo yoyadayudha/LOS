@@ -35,8 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 public class LoanController {
+    //lombok
+    //dependency injector @Autowired
     
-    @Autowired 
+    @Autowired
     private Validator validator;
 
     @Autowired
