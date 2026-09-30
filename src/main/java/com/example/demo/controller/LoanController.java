@@ -11,12 +11,6 @@ import org.springframework.ui.Model;
 
 import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.dto.LoanResponseDTO;
-import com.example.demo.model.Loan;
-import com.example.demo.model.LoanApproval;
-import com.example.demo.model.User;
-import com.example.demo.repository.LoanApprovalRepository;
-import com.example.demo.repository.LoanRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.LoanService;
 import com.example.demo.validation.OnDraft;
 import com.example.demo.validation.OnSubmit;
@@ -30,8 +24,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 public class LoanController {
@@ -67,13 +59,11 @@ public class LoanController {
         //TODO: process POST request
         Set<ConstraintViolation<ApplicationFormRequestDTO>> violations;
         
-
         if(mode.equals("submit")) {
             violations = validator.validate(dto, OnSubmit.class);
         }else{
             violations = validator.validate(dto, OnDraft.class);
         }
-
 
         if(!violations.isEmpty()) {
             model.addAttribute("violations", violations);
@@ -91,7 +81,6 @@ public class LoanController {
 
         
     }
-    
     
     @GetMapping("/loans/hapus/{id}")
     public String hapusLoan(@PathVariable("id") Integer id) {

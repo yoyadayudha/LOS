@@ -26,7 +26,7 @@ import java.time.LocalDate;
 public class ApplicationFormRequestDTO {
     private Integer loanId;
 
-    @NotBlank(message = "NIK wajib 16 digit angka", groups = {OnDraft.class, OnSubmit.class})
+    @NotBlank(message = "NIK wajib 16 digit angka", groups = {OnSubmit.class})
     @Pattern(regexp = "\\d{16}", message = "NIK wajib 16 digit angka", groups = {OnDraft.class, OnSubmit.class})
     private String nik;
 

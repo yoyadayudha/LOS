@@ -94,14 +94,26 @@ public class LoanApplicationValidator implements ConstraintValidator<ValidLoanAp
 
         }
 
-        List<Integer> allowedTenors = Arrays.asList(6, 12, 18, 24, 36, 60, 120, 180);
+        
 
-        if(dto.getTenorMonths() != null && !allowedTenors.contains(dto.getTenorMonths())){
-            context.buildConstraintViolationWithTemplate("Tenor wajib salah satu dari: 6, 12, 18, 24, 36, 60, 120, 180 bulan")
-            .addPropertyNode("tenorMonths")
-            .addConstraintViolation();
+        if(dto.getTenorMonths() != null && dto.getProductType() != null){
+            List<Integer> allowedTenors;
 
-            isValid = false;
+            if(dto.getProductType() == ProductType.KPR){
+                allowedTenors = Arrays.asList(6, 12, 18, 24, 36, 60, 120, 180);
+            }else{
+                allowedTenors = Arrays.asList(6, 12, 18, 24, 36, 60);
+            }
+
+
+            if(!allowedTenors.contains(dto.getTenorMonths())){
+                context.buildConstraintViolationWithTemplate("Tenor tidak sesuai dengan pilihan yang tersedia untuk produk ini")
+                .addPropertyNode("tenorMonths")
+                .addConstraintViolation();
+                isValid = false;
+
+            }
+
 
         }
 

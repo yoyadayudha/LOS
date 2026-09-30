@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.model.Debtor;
 
 @Repository 
-public interface DebtorRepository extends JpaRepository<Debtor, String>{
+public interface DebtorRepository extends JpaRepository<Debtor, Integer>{
+
+    Debtor findByNik(String nik);
     
 }

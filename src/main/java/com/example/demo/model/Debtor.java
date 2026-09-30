@@ -6,6 +6,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -13,8 +15,11 @@ import jakarta.persistence.Table;
 @Table(name = "debtors")
 public class Debtor {
     
-    @Id 
-    @Column(name = "nik", length = 16, nullable = false)
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "nik", length = 16, unique = true)
     private String nik;
 
     @Column (name = "full_name", length = 100, nullable = false)
@@ -92,5 +97,13 @@ public class Debtor {
         this.address = address;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+     
     
 }

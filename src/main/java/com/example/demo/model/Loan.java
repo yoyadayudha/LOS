@@ -32,7 +32,7 @@ public class Loan {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn (name = "debtor_nik", referencedColumnName = "nik")
+    @JoinColumn (name = "debtor_id", referencedColumnName = "id")
     private Debtor debtor;
 
     @Column (name = "company_name")

@@ -95,10 +95,18 @@ public class LoanService {
         return "APP-" + datePart + "-" + sequencePart;
     }
 
-    private Debtor upsertDebtor(ApplicationFormRequestDTO dto) {
-        
-        Debtor debtor = debtorRepository.findById(dto.getNik()).orElse(new Debtor());
+    private Debtor upsertDebtor(ApplicationFormRequestDTO dto, Debtor previousDebtor) {
+        Debtor debtor;
 
+        if(dto.getNik() != null && !dto.getNik().isBlank()){
+            Debtor existingDebtor = debtorRepository.findByNik(dto.getNik());
+            debtor = (existingDebtor != null) ? existingDebtor : new Debtor();         
+        }else if(previousDebtor != null){
+            debtor = previousDebtor;
+        }else {
+            debtor = new Debtor();
+        }
+      
         debtor.setNik(dto.getNik());
         debtor.setFullName(dto.getFullName());
         debtor.setEmail(dto.getEmail());
@@ -114,11 +122,13 @@ public class LoanService {
 
     private Loan mapDtoToLoan(ApplicationFormRequestDTO dto, ApplicationStatus status){
 
-        Debtor debtor = upsertDebtor(dto);
 
         Loan loan = (dto.getLoanId() != null)
                     ? loanRepository.findById(dto.getLoanId()). orElse(new Loan())
                     : new Loan();
+
+        Debtor previousDebtor = loan.getDebtor();
+        Debtor debtor = upsertDebtor(dto, previousDebtor);
 
         loan.setDebtor(debtor);
         loan.setCompanyName(dto.getCompanyName());

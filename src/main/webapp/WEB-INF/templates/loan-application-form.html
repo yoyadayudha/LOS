@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Form Pengajuan kredit</title>
+            <link th:href= "@{/css/bootstrap.min.css}" rel = "stylesheet">
+            <link th:href= "@{/style.css}" rel = "stylesheet">
+    </head>
+        <body>
+            <div class ="container py-4">
+                <h2>Form Pengajuan Kredit</h2>
+
+                <form th:action= "@{/loans/simpan-pengajuan}" th:object="${applicationForm}" method="POST">
+
+                    <input type="hidden" th:field="*{loanId}">
+
+                    <h4>Section A - Data Debitur</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">NIK</label>
+                        <input type="text" class="form-control" th:field="*{nik}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" th:field="*{fullName}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" th:field="*{email}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">No. Telepon</label>
+                        <input type="text" class="form-control" th:field="*{phone}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Lahir</label>
+                        <input type="text" class="form-control" th:field="*{birthDate}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Kelamin</label>
+                        <select class="form-control" th:field="*{gender}">
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "g :${T(com.example.demo.model.Gender).values()}" th:value="${g}" th:text="${g}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Alamat</label>
+                        <textarea class="form-control" th:field="*{address}"></textarea>
+                    </div>
+
+                    <h4>Section B - Data Pekerjaan & Keuangan</h4>
+
+                    <div class="mb-3">
+                        <label class = "form-label">Nama Perusahaan</label>
+                        <input type="text" class = "form-control" th:field="*{companyName}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status Kepegawaian</label>
+                        <select class="form-control" th:field="*{employmentType}">
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "e :${T(com.example.demo.model.EmploymentType).values()}" th:value="${e}" th:text="${e}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Lama Bekerja (bulan)</label>
+                        <input type="text" class = "form-control" th:field="*{workDurationMonths}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Pendapatan Bersih per Bulan</label>
+                        <input type="text" class = "form-control" th:field="*{monthlyIncome}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Cicilan di Tempat Lain</label>
+                        <input type="text" class = "form-control" th:field="*{existingInstallments}">
+                    </div>
+                    
+
+                    <h4>Section C - Data Pengajuan Pinjaman</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Produk</label>
+                        <select class="form-control" th:field="*{productType}">
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "p :${T(com.example.demo.model.ProductType).values()}" th:value="${p}" th:text="${p}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class = "form-label">Nominal Pinjaman</label>
+                        <input type="text" class = "form-control" th:field="*{requestedAmount}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Tenor (bulan)</label>
+                        <input type="text" class = "form-control" th:field="*{tenorMonths}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Skema Bunga</label>
+                        <select class="form-control" th:field="*{interestScheme}">
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "i :${T(com.example.demo.model.InterestScheme).values()}" th:value="${i}" th:text="${i}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tujuan Penggunaan</label>
+                        <textarea class="form-control" th:field="*{loanPurpose}"></textarea>
+                    </div>
+
+                    <h4>Section D - Data Agunan</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">Menggunakan Agunan?</label>
+                        <select class="form-control" th:field="*{hasCollateral}">
+                            <option value="">-- Pilih --</option>
+                            <option value="true">Ya</option>
+                            <option value="false">Tidak</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Agunan</label>
+                        <select class="form-control" th:field="*{collateralType}">
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "c :${T(com.example.demo.model.CollateralType).values()}" th:value="${c}" th:text="${c}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class = "form-label">Nilai Agunan</label>
+                        <input type="text" class = "form-control" th:field="*{collateralValue}">
+                    </div>
+
+                    <div class = "mt-4">
+                        <button type="submit" name="mode" value="draft" class="btn btn-secondary">Save Draft</button>
+                        <button type="submit" name="mode" value="submit" class="btn btn-secondary">Submit Application</button>
+                    </div>
+                    
+                </form>
+            </div>
+
+            <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+        </body>
+</html>
