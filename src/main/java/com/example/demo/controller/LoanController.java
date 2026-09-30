@@ -27,8 +27,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class LoanController {
+    //lombok
+    //dependency injector @Autowired
     
-    @Autowired 
+    @Autowired
     private Validator validator;
 
     @Autowired

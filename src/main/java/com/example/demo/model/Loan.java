@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "loans")
 public class Loan {
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

@@ -15,7 +15,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class LoanApplicationValidator implements ConstraintValidator<ValidLoanApplication, ApplicationFormRequestDTO> {
     
-    @Override 
+    @Override
     public boolean isValid(ApplicationFormRequestDTO dto, ConstraintValidatorContext context ){
 
         boolean isValid = true;
