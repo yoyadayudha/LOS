@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.dto.LoanResponseDTO;
@@ -19,7 +21,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +40,13 @@ public class LoanController {
     @Autowired
     private LoanService loanService;
 
+    private static final List<Integer> TENOR_OPTIONS = List.of(6, 12, 18, 24, 36, 60,120, 180);
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder){
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
     @GetMapping("/loans")
     public String listLoans(Model model, HttpSession session) {
         List<LoanResponseDTO> loanResponseDTOs = loanService.getAllLoans();
@@ -50,12 +61,14 @@ public class LoanController {
     @GetMapping("/loans/tambah")
     public String formTambahPengajuan(Model model) {
         model.addAttribute("applicationForm", new ApplicationFormRequestDTO());
+        model.addAttribute("tenorOptions", TENOR_OPTIONS);
         return "loan-application-form";
     }
 
     @PostMapping("/loans/simpan-pengajuan")
     public String simpanPengajuan(
         @ModelAttribute("applicationForm") ApplicationFormRequestDTO dto,
+        BindingResult bindingResult,
         @RequestParam String mode,
         Model model) {
         //TODO: process POST request
@@ -66,12 +79,13 @@ public class LoanController {
         }else{
             violations = validator.validate(dto, OnDraft.class);
         }
-
-        if(!violations.isEmpty()) {
+        if(bindingResult.hasErrors() || !violations.isEmpty()){
             model.addAttribute("violations", violations);
             model.addAttribute("applicationForm", dto);
+            model.addAttribute("tenorOptions", TENOR_OPTIONS);
             return "loan-application-form";
         }
+
 
         if(mode.equals("submit")){
             loanService.submitApplication(dto);

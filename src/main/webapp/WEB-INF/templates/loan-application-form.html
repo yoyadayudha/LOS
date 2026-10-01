@@ -15,6 +15,12 @@
 
                     <input type="hidden" th:field="*{loanId}">
 
+                    <div th:if= "${violations != null and !violations.isEmpty()}" class="alert alert-danger">
+                        <ul>
+                            <li th:each= "v: ${violations}" th:text="${v.propertyPath + ': ' + v.message}"></li>
+                        </ul>
+                    </div>
+
                     <h4>Section A - Data Debitur</h4>
 
                     <div class="mb-3">
@@ -39,7 +45,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">Tanggal Lahir</label>
-                        <input type="text" class="form-control" th:field="*{birthDate}">
+                        <input type="date" class="form-control" th:field="*{birthDate}"
+                        th:value="${birthDate != null} ? ${#temporals.format(birthDate, 'yyyy-MM-dd')} : ''">
                     </div>
 
                     <div class="mb-3">
@@ -72,17 +79,17 @@
                     
                     <div class="mb-3">
                         <label class = "form-label">Lama Bekerja (bulan)</label>
-                        <input type="text" class = "form-control" th:field="*{workDurationMonths}">
+                        <input type="number" class = "form-control" th:field="*{workDurationMonths}">
                     </div>
                     
                     <div class="mb-3">
                         <label class = "form-label">Pendapatan Bersih per Bulan</label>
-                        <input type="text" class = "form-control" th:field="*{monthlyIncome}">
+                        <input type="number" step="any" class = "form-control" th:field="*{monthlyIncome}">
                     </div>
                     
                     <div class="mb-3">
                         <label class = "form-label">Cicilan di Tempat Lain</label>
-                        <input type="text" class = "form-control" th:field="*{existingInstallments}">
+                        <input type="number" step="any" class = "form-control" th:field="*{existingInstallments}">
                     </div>
                     
 
@@ -98,12 +105,15 @@
 
                     <div class="mb-3">
                         <label class = "form-label">Nominal Pinjaman</label>
-                        <input type="text" class = "form-control" th:field="*{requestedAmount}">
+                        <input type="number" step="any" class = "form-control" th:field="*{requestedAmount}">
                     </div>
                     
                     <div class="mb-3">
                         <label class = "form-label">Tenor (bulan)</label>
-                        <input type="text" class = "form-control" th:field="*{tenorMonths}">
+                        <select class="form-control" th:field="*{tenorMonths}">
+                            <option value="">-- Pilih --</option>
+                            <option th:each="t : ${tenorOptions}" th:value="${t}" th:text="${t}"></option>
+                        </select>
                     </div>
 
                     <div class="mb-3">
@@ -140,7 +150,7 @@
 
                     <div class="mb-3">
                         <label class = "form-label">Nilai Agunan</label>
-                        <input type="text" class = "form-control" th:field="*{collateralValue}">
+                        <input type="number" step="any" class = "form-control" th:field="*{collateralValue}">
                     </div>
 
                     <div class = "mt-4">

@@ -59,42 +59,42 @@ public class DemoApplication {
                 roleOperator.setId(1);
                 roleOperator.setRoleName("ROLE_OPERATOR");
                 roleOperator.setDescription("Input Data Pengajuan Kredit");
-                roleOperator.setApprovalLimit(0L); 
+                roleOperator.setApprovalLimit(new BigDecimal("0")); 
                 roleRepository.save(roleOperator);
 
                 roleAnalyst = new Role();
                 roleAnalyst.setId(2);
                 roleAnalyst.setRoleName("ROLE_ANALYST");
                 roleAnalyst.setDescription("Review Underwriting Kredit");
-                roleAnalyst.setApprovalLimit(0L);
+                roleAnalyst.setApprovalLimit(new BigDecimal("0"));
                 roleRepository.save(roleAnalyst);
 
                 roleApprover1 = new Role();
                 roleApprover1.setId(3);
                 roleApprover1.setRoleName("ROLE_APPROVER_L1");
                 roleApprover1.setDescription("Approval Plafon Tingkat SPV Level 1");
-                roleApprover1.setApprovalLimit(50000000L);
+                roleApprover1.setApprovalLimit(new BigDecimal("50000000"));
                 roleRepository.save(roleApprover1);
 
                 roleApprover2 = new Role();
                 roleApprover2.setId(4);
                 roleApprover2.setRoleName("ROLE_APPROVER_L2");
                 roleApprover2.setDescription("Approval Plafon Tingkat SPV Level 2");
-                roleApprover2.setApprovalLimit(250000000L);
+                roleApprover2.setApprovalLimit(new BigDecimal("250000000"));
                 roleRepository.save(roleApprover2);
 
                 roleApprover3 = new Role();
                 roleApprover3.setId(5);
                 roleApprover3.setRoleName("ROLE_APPROVER_L3");
                 roleApprover3.setDescription("Approval Plafon Tingkat SPV Level 3");
-                roleApprover3.setApprovalLimit(1000000000L);
+                roleApprover3.setApprovalLimit(new BigDecimal("1000000000"));
                 roleRepository.save(roleApprover3);
 
                 roleInquiry = new Role();
                 roleInquiry.setId(6);
                 roleInquiry.setRoleName("ROLE_INQUIRY");
                 roleInquiry.setDescription("Murni Mengintip & Monitoring Data");
-                roleInquiry.setApprovalLimit(0L);
+                roleInquiry.setApprovalLimit(new BigDecimal("0"));
                 roleRepository.save(roleInquiry);
             } else {
                 roleOperator = roleRepository.findByRoleName("ROLE_OPERATOR");

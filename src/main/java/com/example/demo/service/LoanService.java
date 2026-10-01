@@ -59,7 +59,7 @@ public class LoanService {
 
         User userInDb = userRepository.findByUdomain(currUsername);
         
-        Long maxUserApprovalLimit = 0L;
+        BigDecimal maxUserApprovalLimit = BigDecimal.ZERO;
         boolean isApprover = false;
 
         if(userInDb != null){
@@ -68,7 +68,7 @@ public class LoanService {
                 if(role.getRoleName().startsWith("ROLE_APPROVER")) {
                     isApprover = true;
 
-                    if(role.getApprovalLimit() > maxUserApprovalLimit){
+                    if(role.getApprovalLimit() != null && role.getApprovalLimit().compareTo(maxUserApprovalLimit) > 0){
                         maxUserApprovalLimit = role.getApprovalLimit();
                     }
                 }
@@ -77,12 +77,14 @@ public class LoanService {
 
 
         boolean bolehProses = isApprover && (loan.getRequestedAmount()
-                                            .compareTo(BigDecimal.valueOf(maxUserApprovalLimit)) <= 0);
+                                            .compareTo(maxUserApprovalLimit) <= 0);
 
 
         return new LoanResponseDTO(loan.getId(), loan.getDebtor().getFullName(),loan.getRequestedAmount(), loan.getStatus().name(), bolehProses);
         
     }
+
+    
 
     private String generateApplicationNumber(){
 

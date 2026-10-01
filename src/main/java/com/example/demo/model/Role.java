@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +19,7 @@ public class Role {
     private String description;
 
     @Column (name = "approval_limit")
-    private Long approvalLimit;
+    private BigDecimal approvalLimit;
 
     public Integer getId() {
         return id;
@@ -43,11 +45,11 @@ public class Role {
         this.description = description;
     }
 
-    public Long getApprovalLimit() {
+    public BigDecimal getApprovalLimit() {
         return approvalLimit;
     }
 
-    public void setApprovalLimit(Long approvalLimit) {
+    public void setApprovalLimit(BigDecimal approvalLimit) {
         this.approvalLimit = approvalLimit;
     }
 
