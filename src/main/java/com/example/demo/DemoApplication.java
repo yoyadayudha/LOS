@@ -125,41 +125,41 @@ public class DemoApplication {
                 userRepository.save(doubleAgent);
             }
 
-            if (loanRepository.count() == 0) {
-                Debtor debtor1 = new Debtor();
-                debtor1.setNik("3174010101900001");
-                debtor1.setFullName("Haruhi Suzumiya");
-                debtor1.setEmail("haruhi@mail.com");
-                debtor1.setPhone("081234567890");
-                debtor1.setBirthDate(LocalDate.of(1992, 10, 8));
-                debtor1.setGender(Gender.FEMALE);
-                debtor1.setAddress("Nishinomiya, Prefektur Hyogo 662-0082, Jepang");
-                debtorRepository.save(debtor1);
+            // if (loanRepository.count() == 0) {
+            //     Debtor debtor1 = new Debtor();
+            //     debtor1.setNik("3174010101900001");
+            //     debtor1.setFullName("Haruhi Suzumiya");
+            //     debtor1.setEmail("haruhi@mail.com");
+            //     debtor1.setPhone("081234567890");
+            //     debtor1.setBirthDate(LocalDate.of(1992, 10, 8));
+            //     debtor1.setGender(Gender.FEMALE);
+            //     debtor1.setAddress("Nishinomiya, Prefektur Hyogo 662-0082, Jepang");
+            //     debtorRepository.save(debtor1);
 
-                Loan l1 = new Loan();
-                l1.setRequestedAmount(new BigDecimal("40000000"));
-                l1.setStatus(ApplicationStatus.DRAFT);
-                l1.setCreatedBy(10);
-                l1.setDebtor(debtor1);
-                loanRepository.save(l1);
+            //     Loan l1 = new Loan();
+            //     l1.setRequestedAmount(new BigDecimal("40000000"));
+            //     l1.setStatus(ApplicationStatus.DRAFT);
+            //     l1.setCreatedBy(10);
+            //     l1.setDebtor(debtor1);
+            //     loanRepository.save(l1);
 
-                Debtor debtor2 = new Debtor();
-                debtor2.setNik("3174010101900002");
-                debtor2.setFullName("Hououin Kyouma");
-                debtor2.setEmail("okarin@mail.com");
-                debtor2.setPhone("089876543210");
-                debtor2.setBirthDate(LocalDate.of(1991, 12, 14));
-                debtor2.setGender(Gender.MALE);
-                debtor2.setAddress(" 3-18-1 Soto-Kanda, Chiyoda-ku, Tokyo");
-                debtorRepository.save(debtor2);
+            //     Debtor debtor2 = new Debtor();
+            //     debtor2.setNik("3174010101900002");
+            //     debtor2.setFullName("Hououin Kyouma");
+            //     debtor2.setEmail("okarin@mail.com");
+            //     debtor2.setPhone("089876543210");
+            //     debtor2.setBirthDate(LocalDate.of(1991, 12, 14));
+            //     debtor2.setGender(Gender.MALE);
+            //     debtor2.setAddress(" 3-18-1 Soto-Kanda, Chiyoda-ku, Tokyo");
+            //     debtorRepository.save(debtor2);
 
-                Loan l2 = new Loan();
-                l2.setRequestedAmount(new BigDecimal("75000000"));
-                l2.setStatus(ApplicationStatus.DRAFT);
-                l2.setCreatedBy(10);
-                l2.setDebtor(debtor2);
-                loanRepository.save(l2);
-            }
+            //     Loan l2 = new Loan();
+            //     l2.setRequestedAmount(new BigDecimal("75000000"));
+            //     l2.setStatus(ApplicationStatus.DRAFT);
+            //     l2.setCreatedBy(10);
+            //     l2.setDebtor(debtor2);
+            //     loanRepository.save(l2);
+            // }
         };
     }
 }

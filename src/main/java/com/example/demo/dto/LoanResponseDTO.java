@@ -4,19 +4,21 @@ import java.math.BigDecimal;
 
 public class LoanResponseDTO {
     private Integer id;
+    private String applicationNumber;
     private String borrowerName;
     private BigDecimal amount;
     private String status;
     private boolean authorizedToApprove;
 
-    public LoanResponseDTO(Integer id, String borrowerName, BigDecimal amount, String status, boolean authorizedToApprove) {
+    public LoanResponseDTO(Integer id, String applicationNumber, String borrowerName, BigDecimal amount, String status, boolean authorizedToApprove) {
         this.id = id;
+        this.applicationNumber = applicationNumber;
         this.borrowerName = borrowerName;
         this.amount = amount;
         this.status = status;
         this.authorizedToApprove = authorizedToApprove;
     }
-
+    
     public Integer getId() {
         return id;
     }
@@ -55,6 +57,14 @@ public class LoanResponseDTO {
 
     public void setAuthorizedToApprove(boolean authorizedToApprove) {
         this.authorizedToApprove = authorizedToApprove;
+    }
+
+    public String getApplicationNumber() {
+        return applicationNumber;
+    }
+
+    public void setApplicationNumber(String applicationNumber) {
+        this.applicationNumber = applicationNumber;
     }
 
     

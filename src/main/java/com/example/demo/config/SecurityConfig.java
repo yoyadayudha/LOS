@@ -56,7 +56,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session
             .maximumSessions(1)
 
-            .maxSessionsPreventsLogin(false)
+            .maxSessionsPreventsLogin(true)
         )
 
         .logout(logout -> logout

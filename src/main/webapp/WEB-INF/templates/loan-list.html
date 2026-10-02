@@ -13,7 +13,7 @@
 
             <div class="navbar-menu">
                 <a th:href="@{/applications/dashboard}">Dashboard</a>
-                <a th:href="@{/loans}">Loan Lists</a>
+                <a th:href="@{/loans}" th:if= "${userRole.contains('INQUIRY')}">Loan Lists</a>
             
                 <form th:action="@{/logout}" method="POST" style="display: inline;">
                     <button type="submit" class="btn-logout-nav">Logout</button>
@@ -22,6 +22,34 @@
         </nav>
         <h2></h2>
         <div class="container">
+
+            <div th:if= "${summary != null}" class = "summary-cards" style="display: flex; gap: 16px; margin-bottom: 20px;">
+                <div class="summary-card">
+                    <div>Submitted</div>
+                    <div th:text="${summary.totalSubmitted}">0</div>
+                </div>
+            </div>
+
+            <div th:if= "${summary != null}" class = "summary-cards" style="display: flex; gap: 16px; margin-bottom: 20px;">
+                <div class="summary-card">
+                    <div>In Review</div>
+                    <div th:text="${summary.totalInReview}">0</div>
+                </div>
+            </div>
+
+            <div th:if= "${summary != null}" class = "summary-cards" style="display: flex; gap: 16px; margin-bottom: 20px;">
+                <div class="summary-card">
+                    <div>Approved</div>
+                    <div th:text="${summary.totalApproved}">0</div>
+                </div>
+            </div>
+
+            <div th:if= "${summary != null}" class = "summary-cards" style="display: flex; gap: 16px; margin-bottom: 20px;">
+                <div class="summary-card">
+                    <div>Rejected</div>
+                    <div th:text="${summary.totalRejected}">0</div>
+                </div>
+            </div>
 
             <div class="card-table">
                 <div class="card-table-header">
@@ -36,7 +64,7 @@
                     <table class="custom-table">
                         <thead>
                             <tr style="background-color: rgb(205, 252, 255);">
-                                <th>ID</th>
+                                <th>No. Aplikasi</th>
                                 <th>Nama Debitur</th>
                                 <th>Nominal Pengajuan</th>
                                 <th>Status</th>
@@ -45,27 +73,20 @@
                         </thead>
                     <tbody>
                         <tr th:each="loan: ${loans}">
-                            <td th:text="${loan.id}">1</td>
+                            <td th:text="${loan.applicationNumber != null ? loan.applicationNumber : '-'}">1</td>
                             <td th:text="${loan.borrowerName}">John Smith</td>
                             <td th:text="'Rp ' + ${#numbers.formatInteger(loan.amount, 3, 'POINT')}">Rp 0</td>
                         <td>
                             <span th:text="${loan.status}"
-                                th:class="${loan.status == 'PENDING' ? 'badge badge-pending' : (loan.status == 'APPROVED' ? 'badge badge-approved' : 'badge badge-rejected')}">
+                                th:class="${loan.status == 'APPROVED' ? 'badge badge-pending' : (loan.status == 'REJECTED' ? 'badge badge-rejected' : 'badge badge-pending')}">
                                 PENDING
                             </span>
                         </td>
                             <td>
-                                <a th:href="@{/loans/detail/{id}(id=${loan.id})}"
-                                th:if="${userRole.contains('APPROVER')}"
+                                <a th:href="@{/loans/edit/{id}(id=${loan.id})}"
+                                th:if= "${userRole.contains('OPERATOR') and loan.status == 'DRAFT'}"
                                 class="btn-action-proses">
-                                Proses Form
-                                </a>
-            
-                                <a th:href="@{/loans/hapus/{id}(id=${loan.id})}"
-                                th:if="${userRole.contains('OPERATOR')}" 
-                                onclick="return confirm('Apakah Anda yakin ingin menghapus data pengajuan ini?')"
-                                class="btn-action-hapus">
-                                Hapus
+                                    Continue
                                 </a>
                             </td>
                         </tr>

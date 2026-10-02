@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.security.access.AccessDeniedException;
 import com.example.demo.dto.ApplicationFormRequestDTO;
+import com.example.demo.dto.DashboardSummaryDTO;
 import com.example.demo.dto.LoanResponseDTO;
 import com.example.demo.model.ApplicationStatus;
 import com.example.demo.model.Debtor;
@@ -44,11 +47,9 @@ public class LoanService {
     public List<LoanResponseDTO> getAllLoans() {
         List<Loan> loans = loanRepository.findAll();
 
-        return loans.stream().map(loan -> {
-
-            return new LoanResponseDTO(loan.getId(), loan.getDebtor().getFullName(), loan.getRequestedAmount(), loan.getStatus().name(), false);
-        }).collect(Collectors.toList());
+        return loans.stream().map(loan -> toLoanResponseDTO(loan, false)).collect(Collectors.toList());
     }
+    
 
     public LoanResponseDTO getLoanDetailForCurUser(Integer id){
         Loan loan = loanRepository.findById(id).orElseThrow();
@@ -59,31 +60,100 @@ public class LoanService {
 
         User userInDb = userRepository.findByUdomain(currUsername);
         
-        BigDecimal maxUserApprovalLimit = BigDecimal.ZERO;
-        boolean isApprover = false;
+        BigDecimal maxUserApprovalLimit = getMaxApprovalLimit(userInDb);
 
-        if(userInDb != null){
-            
-            for (Role role : userInDb.getRoles()){
-                if(role.getRoleName().startsWith("ROLE_APPROVER")) {
-                    isApprover = true;
-
-                    if(role.getApprovalLimit() != null && role.getApprovalLimit().compareTo(maxUserApprovalLimit) > 0){
-                        maxUserApprovalLimit = role.getApprovalLimit();
-                    }
-                }
-            }
-        }
+        boolean bolehProses = maxUserApprovalLimit.compareTo(BigDecimal.ZERO) > 0
+                              && loan.getRequestedAmount() != null
+                              && loan.getRequestedAmount().compareTo(maxUserApprovalLimit) <= 0;
 
 
-        boolean bolehProses = isApprover && (loan.getRequestedAmount()
-                                            .compareTo(maxUserApprovalLimit) <= 0);
-
-
-        return new LoanResponseDTO(loan.getId(), loan.getDebtor().getFullName(),loan.getRequestedAmount(), loan.getStatus().name(), bolehProses);
+        return toLoanResponseDTO(loan, bolehProses);
         
     }
 
+
+    public List<LoanResponseDTO> getOperatorTasks(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currUser = userRepository.findByUdomain(auth.getName());
+
+        if(currUser == null){
+            return List.of();
+        }
+
+        List<ApplicationStatus> operatorStatus = Arrays.asList(ApplicationStatus.DRAFT, ApplicationStatus.REJECTED);
+        List<Loan> loans = loanRepository.findByCreatedByAndStatusIn(currUser.getId(), operatorStatus);
+
+        return loans.stream()
+            .map(loan -> toLoanResponseDTO(loan, false))
+               
+            .collect(Collectors.toList());
+    }
+
+    public List<LoanResponseDTO> getApproverTasks(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currUser = userRepository.findByUdomain(auth.getName());
+
+        if(currUser == null){
+            return List.of();
+        }
+
+        BigDecimal maxUserApprovalLimit = getMaxApprovalLimit(currUser);
+
+        List<Loan> loans = loanRepository.findApproverEligibleTasks(ApplicationStatus.SUBMITTED, maxUserApprovalLimit);
+
+        return loans.stream()
+        .map(loan -> toLoanResponseDTO(loan, true))
+            .collect(Collectors.toList());
+
+
+    }
+
+
+    public DashboardSummaryDTO getDashboardSummary(){
+        long totalSubmitted = loanRepository.countByStatus(ApplicationStatus.SUBMITTED);
+        long totalInReview = loanRepository.countByStatus(ApplicationStatus.IN_REVIEW);
+        long totalApproved = loanRepository.countByStatus(ApplicationStatus.APPROVED);
+        long totalRejected = loanRepository.countByStatus(ApplicationStatus.REJECTED);
+
+
+        return new DashboardSummaryDTO(totalSubmitted, totalInReview, totalApproved, totalRejected);
+    }
+
+
+    private BigDecimal getMaxApprovalLimit(User user){
+        BigDecimal maxLimit = BigDecimal.ZERO;
+
+
+        if(user == null || user.getRoles() == null){
+            return maxLimit;
+        }
+
+
+        for(Role role : user.getRoles()){
+            if(role != null
+                && role.getRoleName() != null
+                && role.getRoleName().startsWith("ROLE_APPROVER")
+                && role.getApprovalLimit() != null
+                && role.getApprovalLimit().compareTo(maxLimit) > 0
+            ){
+            maxLimit = role.getApprovalLimit();
+
+            }
+
+        }
+
+
+        return maxLimit;
+    }
+
+
+    private LoanResponseDTO toLoanResponseDTO(Loan loan, boolean authorizedToApprove){
+        String borrowerName = (loan.getDebtor() != null) ? loan.getDebtor().getFullName() : null;
+        String statusName = (loan.getStatus() != null) ? loan.getStatus().name() : null;
+
+        return new LoanResponseDTO(
+            loan.getId(), loan.getApplicationNumber(), borrowerName, loan.getRequestedAmount(), statusName, authorizedToApprove);
+    }
     
 
     private String generateApplicationNumber(){
@@ -120,6 +190,58 @@ public class LoanService {
         return debtorRepository.save(debtor);
 
 
+    }
+
+    private ApplicationFormRequestDTO mapLoanToDto(Loan loan){
+        ApplicationFormRequestDTO dto = new ApplicationFormRequestDTO();
+
+        dto.setLoanId(loan.getId());
+
+        Debtor debtor = loan.getDebtor();
+
+        if(debtor != null){
+            dto.setNik(debtor.getNik());
+            dto.setFullName(debtor.getFullName());
+            dto.setEmail(debtor.getEmail());
+            dto.setPhone(debtor.getPhone());
+            dto.setBirthDate(debtor.getBirthDate());
+            dto.setGender(debtor.getGender());
+            dto.setAddress(debtor.getAddress());
+        }
+
+        dto.setCompanyName(loan.getCompanyName());
+        dto.setEmploymentType(loan.getEmploymentType());
+        dto.setWorkDurationMonths(loan.getWorkDurationMonths());
+        dto.setMonthlyIncome(loan.getMonthlyIncome());
+        dto.setExistingInstallments(loan.getExistingInstallments());
+        dto.setProductType(loan.getProductType());
+        dto.setRequestedAmount(loan.getRequestedAmount());
+        dto.setTenorMonths(loan.getTenorMonths());
+        dto.setInterestScheme(loan.getInterestScheme());
+        dto.setLoanPurpose(loan.getLoanPurpose());
+        dto.setHasCollateral(loan.getHasCollateral());
+        dto.setCollateralType(loan.getCollateralType());
+        dto.setCollateralValue(loan.getCollateralValue());
+
+        return dto;
+    }
+
+    public ApplicationFormRequestDTO getLoanForEdit(Integer id){
+        Loan loan = loanRepository.findById(id).orElseThrow();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currUser = userRepository.findByUdomain(auth.getName());
+
+        if(currUser == null || loan.getCreatedBy() == null
+            || !loan.getCreatedBy().equals(currUser.getId())){
+                throw new AccessDeniedException("Bukan pemilik draft ini");
+            }
+
+        if (loan.getStatus() != ApplicationStatus.DRAFT){
+            throw new IllegalStateException("Hanya draf yang bisa diedit");
+        }
+
+        return mapLoanToDto(loan);
     }
 
     private Loan mapDtoToLoan(ApplicationFormRequestDTO dto, ApplicationStatus status){
@@ -180,12 +302,6 @@ public class LoanService {
         Loan loan = mapDtoToLoan(dto, ApplicationStatus.SUBMITTED);
         return loanRepository.save(loan);
 
-    }
-
-    public void createNewLoan(Loan loan){
-        loan.setStatus(ApplicationStatus.DRAFT);
-        loan.setCreatedBy(1);
-        loanRepository.save(loan);
     }
 
     public void deleteLoanById(Integer id){

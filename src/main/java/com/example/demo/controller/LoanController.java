@@ -58,6 +58,27 @@ public class LoanController {
         return "loan-list";
     }
 
+    @GetMapping("/applications/dashboard")
+    public String dashboard(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isApprover = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().startsWith("ROLE_APPROVER"));
+
+
+        if(isApprover){
+            model.addAttribute("loans", loanService.getApproverTasks());
+            model.addAttribute("summary", loanService.getDashboardSummary());
+        }else{
+            model.addAttribute("loans", loanService.getOperatorTasks());
+        }
+
+
+        model.addAttribute("userRole", auth.getAuthorities().toString());
+
+
+        return "loan-list";
+    }
+    
+
     @GetMapping("/loans/tambah")
     public String formTambahPengajuan(Model model) {
         model.addAttribute("applicationForm", new ApplicationFormRequestDTO());
@@ -93,10 +114,20 @@ public class LoanController {
             loanService.saveDraft(dto);
         }
 
-        return "redirect:/loans";
+        return "redirect:/applications/dashboard";
 
         
     }
+
+    @GetMapping("/loans/edit/{id}")
+    public String formEditDraft(@PathVariable("id") Integer id, Model model) {
+        ApplicationFormRequestDTO dto = loanService.getLoanForEdit(id);
+
+        model.addAttribute("applicationForm", dto);
+        model.addAttribute("tenorOptions", TENOR_OPTIONS);
+        return "loan-application-form";
+    }
+    
     
     @GetMapping("/loans/hapus/{id}")
     public String hapusLoan(@PathVariable("id") Integer id) {

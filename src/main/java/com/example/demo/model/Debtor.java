@@ -19,26 +19,26 @@ public class Debtor {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nik", length = 16, unique = true)
+    @Column(name = "nik", length = 16, unique = true, nullable = true)
     private String nik;
 
-    @Column (name = "full_name", length = 100, nullable = false)
+    @Column (name = "full_name", length = 100, nullable = true)
     private String fullName;
 
-    @Column (name = "email", length = 100, nullable = false)
+    @Column (name = "email", length = 100, nullable = true)
     private String email;
 
-    @Column (name = "phone", length = 13, nullable = false)
+    @Column (name = "phone", length = 13, nullable = true)
     private String phone;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date", nullable = true)
     private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name ="gender", nullable = false)
+    @Column(name ="gender", nullable = true)
     private Gender gender;
 
-    @Column (name = "address", length = 250, nullable = false)
+    @Column (name = "address", length = 250, nullable = true)
     private String address;
 
     public String getNik() {
