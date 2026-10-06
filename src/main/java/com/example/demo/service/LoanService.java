@@ -85,7 +85,7 @@ public class LoanService {
 
         return loans.stream()
             .map(loan -> toLoanResponseDTO(loan, false))
-               
+
             .collect(Collectors.toList());
     }
 
