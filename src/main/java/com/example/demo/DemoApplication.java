@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Arrays;
 
 import org.springframework.boot.CommandLineRunner;
@@ -12,16 +11,22 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
-import com.example.demo.model.ApplicationStatus;
-import com.example.demo.model.Debtor;
-import com.example.demo.model.Gender;
-import com.example.demo.model.Loan;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.DebtorRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+
+import java.time.LocalDate;
+import com.example.demo.model.Debtor;
+import com.example.demo.model.Loan;
+import com.example.demo.model.ApplicationStatus;
+import com.example.demo.model.Gender;
+import com.example.demo.model.ProductType;
+import com.example.demo.model.InterestScheme;
+import com.example.demo.model.EmploymentType;
+import com.example.demo.model.CollateralType;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.example.demo.repository")
@@ -110,6 +115,13 @@ public class DemoApplication {
                 op.setRoles(Arrays.asList(roleOperator));
                 userRepository.save(op);
 
+                User op1 = new User();
+                op1.setId(36);
+                op1.setUdomain("U111111");
+                op1.setPassword(securePassword);
+                op1.setRoles(Arrays.asList(roleOperator));
+                userRepository.save(op1);
+
                 User app2 = new User();
                 app2.setId(12);
                 app2.setUdomain("U222222");
@@ -125,41 +137,127 @@ public class DemoApplication {
                 userRepository.save(doubleAgent);
             }
 
-            // if (loanRepository.count() == 0) {
-            //     Debtor debtor1 = new Debtor();
-            //     debtor1.setNik("3174010101900001");
-            //     debtor1.setFullName("Haruhi Suzumiya");
-            //     debtor1.setEmail("haruhi@mail.com");
-            //     debtor1.setPhone("081234567890");
-            //     debtor1.setBirthDate(LocalDate.of(1992, 10, 8));
-            //     debtor1.setGender(Gender.FEMALE);
-            //     debtor1.setAddress("Nishinomiya, Prefektur Hyogo 662-0082, Jepang");
-            //     debtorRepository.save(debtor1);
+            if (loanRepository.count() == 0) {
 
-            //     Loan l1 = new Loan();
-            //     l1.setRequestedAmount(new BigDecimal("40000000"));
-            //     l1.setStatus(ApplicationStatus.DRAFT);
-            //     l1.setCreatedBy(10);
-            //     l1.setDebtor(debtor1);
-            //     loanRepository.save(l1);
+                Debtor hitagi = new Debtor();
+                hitagi.setNik("3174010101900001");
+                hitagi.setFullName("Hitagi Senjougahara");
+                hitagi.setEmail("hitagi@mail.com");
+                hitagi.setPhone("081234567890");
+                hitagi.setBirthDate(LocalDate.of(1995, 7, 7));
+                hitagi.setGender(Gender.FEMALE);
+                hitagi.setAddress("Naoetsu, Prefektur Nagano, Jepang");
+                debtorRepository.save(hitagi);
 
-            //     Debtor debtor2 = new Debtor();
-            //     debtor2.setNik("3174010101900002");
-            //     debtor2.setFullName("Hououin Kyouma");
-            //     debtor2.setEmail("okarin@mail.com");
-            //     debtor2.setPhone("089876543210");
-            //     debtor2.setBirthDate(LocalDate.of(1991, 12, 14));
-            //     debtor2.setGender(Gender.MALE);
-            //     debtor2.setAddress(" 3-18-1 Soto-Kanda, Chiyoda-ku, Tokyo");
-            //     debtorRepository.save(debtor2);
+                Debtor araragi = new Debtor();
+                araragi.setNik("3174010101900002");
+                araragi.setFullName("Koyomi Araragi");
+                araragi.setEmail("araragi@mail.com");
+                araragi.setPhone("089876543210");
+                araragi.setBirthDate(LocalDate.of(1993, 4, 7));
+                araragi.setGender(Gender.MALE);
+                araragi.setAddress("Naoetsu, Prefektur Nagano, Jepang");
+                debtorRepository.save(araragi);
 
-            //     Loan l2 = new Loan();
-            //     l2.setRequestedAmount(new BigDecimal("75000000"));
-            //     l2.setStatus(ApplicationStatus.DRAFT);
-            //     l2.setCreatedBy(10);
-            //     l2.setDebtor(debtor2);
-            //     loanRepository.save(l2);
-            // }
+                Debtor hanekawa = new Debtor();
+                hanekawa.setNik("3174010101900003");
+                hanekawa.setFullName("Tsubasa Hanekawa");
+                hanekawa.setEmail("hanekawa@mail.com");
+                hanekawa.setPhone("081111222333");
+                hanekawa.setBirthDate(LocalDate.of(1994, 4, 10));
+                hanekawa.setGender(Gender.FEMALE);
+                hanekawa.setAddress("Naoetsu, Prefektur Nagano, Jepang");
+                debtorRepository.save(hanekawa);
+
+                Loan l1 = new Loan();
+                l1.setApplicationNumber("APP-20261001-00001");
+                l1.setDebtor(hitagi);
+                l1.setCompanyName("PT Oddity Abadi");
+                l1.setEmploymentType(EmploymentType.PERMANENT);
+                l1.setWorkDurationMonths(24);
+                l1.setMonthlyIncome(new BigDecimal("15000000"));
+                l1.setExistingInstallments(new BigDecimal("0"));
+                l1.setProductType(ProductType.KPR);
+                l1.setRequestedAmount(new BigDecimal("40000000"));
+                l1.setTenorMonths(60);
+                l1.setInterestScheme(InterestScheme.ANNUITY);
+                l1.setLoanPurpose("Renovasi rumah");
+                l1.setHasCollateral(true);
+                l1.setCollateralType(CollateralType.PROPERTY);
+                l1.setCollateralValue(new BigDecimal("80000000"));
+                l1.setStatus(ApplicationStatus.DRAFT);
+                l1.setCreatedBy(10);
+                loanRepository.save(l1);
+
+                Loan l2 = new Loan();
+                l2.setApplicationNumber("APP-20261001-00002");
+                l2.setDebtor(araragi);
+                l2.setCompanyName("PT Vampire Holdings");
+                l2.setEmploymentType(EmploymentType.PERMANENT);
+                l2.setWorkDurationMonths(36);
+                l2.setMonthlyIncome(new BigDecimal("20000000"));
+                l2.setExistingInstallments(new BigDecimal("0"));
+                l2.setProductType(ProductType.KKB);
+                l2.setRequestedAmount(new BigDecimal("100000000"));
+                l2.setTenorMonths(36);
+                l2.setInterestScheme(InterestScheme.FLAT);
+                l2.setLoanPurpose("Pembelian kendaraan");
+                l2.setHasCollateral(true);
+                l2.setCollateralType(CollateralType.VEHICLE);
+                l2.setCollateralValue(new BigDecimal("120000000"));
+                l2.setStatus(ApplicationStatus.SUBMITTED);
+                l2.setCreatedBy(10);
+                loanRepository.save(l2);
+
+                Loan l3 = new Loan();
+                l3.setApplicationNumber("APP-20261001-00003");
+                l3.setDebtor(hanekawa);
+                l3.setCompanyName("PT Cat Nekomata");
+                l3.setEmploymentType(EmploymentType.PERMANENT);
+                l3.setWorkDurationMonths(48);
+                l3.setMonthlyIncome(new BigDecimal("40000000"));
+                l3.setExistingInstallments(new BigDecimal("0"));
+                l3.setProductType(ProductType.KPR);
+                l3.setRequestedAmount(new BigDecimal("500000000"));
+                l3.setTenorMonths(120);
+                l3.setInterestScheme(InterestScheme.ANNUITY);
+                l3.setLoanPurpose("Pembelian properti");
+                l3.setHasCollateral(true);
+                l3.setCollateralType(CollateralType.PROPERTY);
+                l3.setCollateralValue(new BigDecimal("700000000"));
+                l3.setStatus(ApplicationStatus.SUBMITTED);
+                l3.setCreatedBy(10);
+                loanRepository.save(l3);
+
+                Loan l4 = new Loan();
+                l4.setApplicationNumber("APP-20261001-00004");
+                l4.setDebtor(hitagi);
+                l4.setProductType(ProductType.KKB);
+                l4.setRequestedAmount(new BigDecimal("80000000"));
+                l4.setTenorMonths(24);
+                l4.setInterestScheme(InterestScheme.FLAT);
+                l4.setHasCollateral(true);
+                l4.setCollateralType(CollateralType.VEHICLE);
+                l4.setCollateralValue(new BigDecimal("100000000"));
+                l4.setStatus(ApplicationStatus.APPROVED);
+                l4.setCreatedBy(10);
+                loanRepository.save(l4);
+
+                Loan l5 = new Loan();
+                l5.setApplicationNumber("APP-20261001-00005");
+                l5.setDebtor(araragi);
+                l5.setProductType(ProductType.KPR);
+                l5.setRequestedAmount(new BigDecimal("300000000"));
+                l5.setTenorMonths(60);
+                l5.setInterestScheme(InterestScheme.ANNUITY);
+                l5.setHasCollateral(true);
+                l5.setCollateralType(CollateralType.PROPERTY);
+                l5.setCollateralValue(new BigDecimal("400000000"));
+                l5.setStatus(ApplicationStatus.REJECTED);
+                l5.setCreatedBy(10);
+                loanRepository.save(l5);
+            }
+
         };
     }
 }
