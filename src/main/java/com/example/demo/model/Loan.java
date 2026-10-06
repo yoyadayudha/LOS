@@ -8,6 +8,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -15,6 +19,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "loans")
+@Getter 
+@Setter 
 public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +28,6 @@ public class Loan {
 
     @Column (name = "application_number", unique = true)
     private String applicationNumber;
-
-    public String getApplicationNumber() {
-        return applicationNumber;
-    }
-
-    public void setApplicationNumber(String applicationNumber) {
-        this.applicationNumber = applicationNumber;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn (name = "debtor_id", referencedColumnName = "id")
@@ -78,149 +76,12 @@ public class Loan {
     @Column (name = "collateral_value", precision = 15, scale = 2)
     private BigDecimal collateralValue;
 
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public EmploymentType getEmploymentType() {
-        return employmentType;
-    }
-
-    public void setEmploymentType(EmploymentType employmentType) {
-        this.employmentType = employmentType;
-    }
-
-    public Integer getWorkDurationMonths() {
-        return workDurationMonths;
-    }
-
-    public void setWorkDurationMonths(Integer workDurationMonths) {
-        this.workDurationMonths = workDurationMonths;
-    }
-
-    public BigDecimal getMonthlyIncome() {
-        return monthlyIncome;
-    }
-
-    public void setMonthlyIncome(BigDecimal monthlyIncome) {
-        this.monthlyIncome = monthlyIncome;
-    }
-
-    public BigDecimal getExistingInstallments() {
-        return existingInstallments;
-    }
-
-    public void setExistingInstallments(BigDecimal existingInstallments) {
-        this.existingInstallments = existingInstallments;
-    }
-
-    public ProductType getProductType() {
-        return productType;
-    }
-
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
-    }
-
-    public BigDecimal getRequestedAmount() {
-        return requestedAmount;
-    }
-
-    public void setRequestedAmount(BigDecimal requestedAmount) {
-        this.requestedAmount = requestedAmount;
-    }
-
-    public Integer getTenorMonths() {
-        return tenorMonths;
-    }
-
-    public void setTenorMonths(Integer tenorMonths) {
-        this.tenorMonths = tenorMonths;
-    }
-
-    public InterestScheme getInterestScheme() {
-        return interestScheme;
-    }
-
-    public void setInterestScheme(InterestScheme interestScheme) {
-        this.interestScheme = interestScheme;
-    }
-
-    public String getLoanPurpose() {
-        return loanPurpose;
-    }
-
-    public void setLoanPurpose(String loanPurpose) {
-        this.loanPurpose = loanPurpose;
-    }
-
-    public Boolean getHasCollateral() {
-        return hasCollateral;
-    }
-
-    public void setHasCollateral(Boolean hasCollateral) {
-        this.hasCollateral = hasCollateral;
-    }
-
-    public CollateralType getCollateralType() {
-        return collateralType;
-    }
-
-    public void setCollateralType(CollateralType collateralType) {
-        this.collateralType = collateralType;
-    }
-
-    public BigDecimal getCollateralValue() {
-        return collateralValue;
-    }
-
-    public void setCollateralValue(BigDecimal collateralValue) {
-        this.collateralValue = collateralValue;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ApplicationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ApplicationStatus status) {
-        this.status = status;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
-    
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ApplicationStatus status = ApplicationStatus.DRAFT;
 
     @Column(name = "created_by")
     private Integer createdBy;
-
-    public Debtor getDebtor() {
-        return debtor;
-    }
-
-    public void setDebtor(Debtor debtor) {
-        this.debtor = debtor;
-    }
 
 
 }
