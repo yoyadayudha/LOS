@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,12 +32,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class LoanController {
     //lombok
     //dependency injector @Autowired
-    
-    @Autowired
-    private Validator validator;
 
-    @Autowired
-    private LoanService loanService;
+    private final Validator validator;
+    private final LoanService loanService;
+
+    public LoanController(Validator validator, LoanService loanService) {
+        this.validator = validator;
+        this.loanService = loanService;
+    }
 
     private static final List<Integer> TENOR_OPTIONS = List.of(6, 12, 18, 24, 36, 60,120, 180);
 
@@ -92,7 +93,7 @@ public class LoanController {
         BindingResult bindingResult,
         @RequestParam String mode,
         Model model) {
-        //TODO: process POST request
+            
         Set<ConstraintViolation<ApplicationFormRequestDTO>> violations;
         
         if(mode.equals("submit")) {

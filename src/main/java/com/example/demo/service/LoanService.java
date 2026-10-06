@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,22 +26,19 @@ import com.example.demo.repository.LoanApprovalRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import jakarta.transaction.Transactional;
 
 @Service
+@RequiredArgsConstructor 
 public class LoanService {
     
-    @Autowired
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
+    private final LoanApprovalRepository loanApprovalRepository;
+    private final UserRepository userRepository;
+    private final DebtorRepository debtorRepository;
 
-    @Autowired 
-    private LoanApprovalRepository loanApprovalRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired 
-    private DebtorRepository debtorRepository;
 
     public List<LoanResponseDTO> getAllLoans() {
         List<Loan> loans = loanRepository.findAll();
