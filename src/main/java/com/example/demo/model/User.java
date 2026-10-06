@@ -8,12 +8,17 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "users")
+@Getter 
+@Setter 
 
 public class User {
     @Id
@@ -32,39 +37,5 @@ public class User {
     )
 
     private List<Role> roles;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getUdomain() {
-        return udomain;
-    }
-
-    public void setUdomain(String udomain) {
-        this.udomain = udomain;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-
     
 }
