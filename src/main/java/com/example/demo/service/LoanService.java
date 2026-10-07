@@ -1,20 +1,25 @@
 package com.example.demo.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.dto.DashboardSummaryDTO;
 import com.example.demo.dto.LoanResponseDTO;
+import com.example.demo.dto.UnderwritingAssessmentDTO;
 import com.example.demo.model.ApplicationStatus;
 import com.example.demo.model.Debtor;
 import com.example.demo.model.Loan;
@@ -27,8 +32,6 @@ import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import jakarta.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor 
@@ -90,6 +93,101 @@ public class LoanService {
 
         return loans.map(loan -> toLoanResponseDTO(loan, true));
 
+    }
+
+    private BigDecimal calculateAnew(Loan loan){
+        BigDecimal requested = loan.getRequestedAmount();
+        Integer tenor = loan.getTenorMonths();
+
+        if (requested == null || tenor == null || tenor == 0){
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal pokokPerBulan = requested.divide(new BigDecimal(tenor), 2, RoundingMode.HALF_UP);
+
+        BigDecimal bungaPerBulan = requested.multiply(new BigDecimal("0.01"));
+
+        return pokokPerBulan.add(bungaPerBulan);
+    }
+
+    private BigDecimal calculateDSR(Loan loan){
+        BigDecimal monthlyIncome = loan.getMonthlyIncome();
+
+        if(monthlyIncome == null || monthlyIncome.compareTo(BigDecimal.ZERO) == 0){
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal existing = (loan.getExistingInstallments() != null)
+                ? loan.getExistingInstallments() : BigDecimal.ZERO;
+
+        BigDecimal anew = calculateAnew(loan);
+
+        BigDecimal totalCicilan = existing.add(anew);
+
+        return totalCicilan.divide(monthlyIncome, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"));
+
+    }
+
+    private BigDecimal calculateLTV(Loan loan){
+        if(!Boolean.TRUE.equals(loan.getHasCollateral())){
+            return null;
+        }
+
+        BigDecimal collateralValue = loan.getCollateralValue();
+        BigDecimal requested = loan.getRequestedAmount();
+
+        if(collateralValue == null || collateralValue.compareTo(BigDecimal.ZERO) == 0){
+            return null;
+        }
+
+        return requested.divide(collateralValue, 4, RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"));
+
+    }
+
+    private String determineRecommendation(BigDecimal dsr, BigDecimal ltv){
+        int dsrRisk;
+
+        if(dsr.compareTo(new BigDecimal("40")) <= 0){
+            dsrRisk = 1;
+        } else if(dsr.compareTo(new BigDecimal("50")) <= 0){
+            dsrRisk = 2;
+        } else{
+            dsrRisk = 3;
+        }
+
+        int ltvRisk;
+
+        if(ltv == null || ltv.compareTo(new BigDecimal("80")) <= 0){
+            ltvRisk = 1;
+        }else if(ltv.compareTo(new BigDecimal("90")) <= 0){
+            ltvRisk = 2;
+        }else{
+            ltvRisk = 3;
+        }
+
+        int finalRisk = Math.max(dsrRisk, ltvRisk);
+
+        if(finalRisk == 1){
+            return "FAST_PATH_APPROVE";
+        }else if(finalRisk == 2){
+            return "MANUAL_REVIEW";
+        }else{
+            return "SYSTEM_REJECT";
+        }
+
+    }
+
+    public UnderwritingAssessmentDTO getAssessment(Integer loanId){
+        Loan loan = loanRepository.findById(loanId).orElseThrow();
+
+        BigDecimal anew = calculateAnew(loan);
+        BigDecimal dsr = calculateDSR(loan);
+        BigDecimal ltv = calculateLTV(loan);
+        String recommendation = determineRecommendation(dsr, ltv);
+
+        return new UnderwritingAssessmentDTO(anew, dsr, ltv, recommendation);
     }
 
 
@@ -297,11 +395,11 @@ public class LoanService {
     public void submitApprovalDecision(Integer loanId, String action, String notes){
         Loan loan = loanRepository.findById(loanId).orElseThrow();
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currUserInDb = userRepository.findByUdomain(auth.getName());
         loan.setStatus(ApplicationStatus.valueOf(action));
         loanRepository.saveAndFlush(loan);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currUserInDb = userRepository.findByUdomain(auth.getName());
 
         LoanApproval logBaru = new LoanApproval();
         logBaru.setLoan(loan);

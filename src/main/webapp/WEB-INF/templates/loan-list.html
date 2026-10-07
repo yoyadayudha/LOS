@@ -96,8 +96,9 @@
                     </table>
                 </div>
 
-                <div class = "pagination-nav">
-                    <span th:text="'Menampilkan halaman ' + (${currentPage} + 1) + ' dari ' + ${totalPages} + ' (' + ${totalItems} + ' total)'"
+                <div class = "pagination-nav" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                    <span style="color: #666; font-size: 13px;"
+                        th:text="'Menampilkan halaman ' + (${currentPage} + 1) + ' dari ' + ${totalPages} + ' (' + ${totalItems} + ' total)'"
 >
                         Menampilkan halaman 1 dari 1
                     </span>
