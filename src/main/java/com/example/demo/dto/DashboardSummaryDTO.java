@@ -3,8 +3,8 @@ package com.example.demo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data 
-@AllArgsConstructor 
+@Data
+@AllArgsConstructor
 public class DashboardSummaryDTO {
     private long totalSubmitted;
     private long totalInReview;

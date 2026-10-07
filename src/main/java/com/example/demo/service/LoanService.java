@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.transaction.Transactional;
 
 @Service
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class LoanService {
     
     private final LoanRepository loanRepository;
