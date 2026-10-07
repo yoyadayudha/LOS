@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import com.example.demo.dto.ApplicationFormRequestDTO;
 import com.example.demo.dto.DashboardSummaryDTO;
@@ -39,12 +39,6 @@ public class LoanService {
     private final UserRepository userRepository;
     private final DebtorRepository debtorRepository;
 
-
-    public List<LoanResponseDTO> getAllLoans() {
-        List<Loan> loans = loanRepository.findAll();
-
-        return loans.stream().map(loan -> toLoanResponseDTO(loan, false)).collect(Collectors.toList());
-    }
     
 
     public LoanResponseDTO getLoanDetailForCurUser(Integer id){
@@ -68,39 +62,33 @@ public class LoanService {
     }
 
 
-    public List<LoanResponseDTO> getOperatorTasks(){
+    public Page<LoanResponseDTO> getOperatorTasks(Pageable pageable){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currUser = userRepository.findByUdomain(auth.getName());
 
         if(currUser == null){
-            return List.of();
+            return Page.empty(pageable);
         }
 
         List<ApplicationStatus> operatorStatus = Arrays.asList(ApplicationStatus.DRAFT, ApplicationStatus.REJECTED);
-        List<Loan> loans = loanRepository.findByCreatedByAndStatusIn(currUser.getId(), operatorStatus);
+        Page<Loan> loans = loanRepository.findByCreatedByAndStatusIn(currUser.getId(), operatorStatus, pageable);
 
-        return loans.stream()
-            .map(loan -> toLoanResponseDTO(loan, false))
-               
-            .collect(Collectors.toList());
+        return loans.map(loan -> toLoanResponseDTO(loan, false));
     }
 
-    public List<LoanResponseDTO> getApproverTasks(){
+    public Page<LoanResponseDTO> getApproverTasks(Pageable pageable){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currUser = userRepository.findByUdomain(auth.getName());
 
         if(currUser == null){
-            return List.of();
+            return Page.empty(pageable);
         }
 
         BigDecimal maxUserApprovalLimit = getMaxApprovalLimit(currUser);
 
-        List<Loan> loans = loanRepository.findApproverEligibleTasks(ApplicationStatus.SUBMITTED, maxUserApprovalLimit);
+        Page<Loan> loans = loanRepository.findApproverEligibleTasks(ApplicationStatus.SUBMITTED, maxUserApprovalLimit, pageable);
 
-        return loans.stream()
-        .map(loan -> toLoanResponseDTO(loan, true))
-            .collect(Collectors.toList());
-
+        return loans.map(loan -> toLoanResponseDTO(loan, true));
 
     }
 
@@ -233,7 +221,8 @@ public class LoanService {
                 throw new AccessDeniedException("Bukan pemilik draft ini");
             }
 
-        if (loan.getStatus() != ApplicationStatus.DRAFT){
+        if (loan.getStatus() != ApplicationStatus.DRAFT
+            && loan.getStatus() != ApplicationStatus.REJECTED){
             throw new IllegalStateException("Hanya draf yang bisa diedit");
         }
 
