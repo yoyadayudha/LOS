@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import org.springframework.boot.CommandLineRunner;
@@ -11,22 +12,20 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import com.example.demo.model.ApplicationStatus;
+import com.example.demo.model.CollateralType;
+import com.example.demo.model.Debtor;
+import com.example.demo.model.EmploymentType;
+import com.example.demo.model.Gender;
+import com.example.demo.model.InterestScheme;
+import com.example.demo.model.Loan;
+import com.example.demo.model.ProductType;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.DebtorRepository;
 import com.example.demo.repository.LoanRepository;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
-
-import java.time.LocalDate;
-import com.example.demo.model.Debtor;
-import com.example.demo.model.Loan;
-import com.example.demo.model.ApplicationStatus;
-import com.example.demo.model.Gender;
-import com.example.demo.model.ProductType;
-import com.example.demo.model.InterestScheme;
-import com.example.demo.model.EmploymentType;
-import com.example.demo.model.CollateralType;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.example.demo.repository")

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+
 @Controller
 public class LoanController {
     //lombok
@@ -48,31 +53,33 @@ public class LoanController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
-    @GetMapping("/loans")
-    public String listLoans(Model model, HttpSession session) {
-        List<LoanResponseDTO> loanResponseDTOs = loanService.getAllLoans();
-        model.addAttribute("loans", loanResponseDTOs);
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        model.addAttribute("userRole", auth.getAuthorities().toString());
-
-        return "loan-list";
-    }
-
     @GetMapping("/applications/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam (defaultValue = "10") int size,
+        Model model) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isApprover = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().startsWith("ROLE_APPROVER"));
+        boolean isApprover = auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().startsWith("ROLE_APPROVER"));
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+
+        Page<LoanResponseDTO> loanPage;
 
 
         if(isApprover){
-            model.addAttribute("loans", loanService.getApproverTasks());
+            loanPage = loanService.getApproverTasks(pageable);
             model.addAttribute("summary", loanService.getDashboardSummary());
         }else{
-            model.addAttribute("loans", loanService.getOperatorTasks());
+             loanPage = loanService.getOperatorTasks(pageable);
         }
 
 
+        model.addAttribute("loans", loanPage.getContent());
+        model.addAttribute("currentPage", loanPage.getNumber());
+        model.addAttribute("totalPages", loanPage.getTotalPages());
+        model.addAttribute("totalItems", loanPage.getTotalElements());
         model.addAttribute("userRole", auth.getAuthorities().toString());
 
 
@@ -133,7 +140,7 @@ public class LoanController {
     @GetMapping("/loans/hapus/{id}")
     public String hapusLoan(@PathVariable("id") Integer id) {
         loanService.deleteLoanById(id);
-        return "redirect:/loans";
+        return "redirect:/applications/dashboard";
     }
     
     @GetMapping("/loans/detail/{id}")

@@ -12,9 +12,7 @@
             <div class="navbar-logo">LOS [Pollos]</div>
 
             <div class="navbar-menu">
-                <a th:href="@{/applications/dashboard}">Dashboard</a>
-                <a th:href="@{/loans}" th:if= "${userRole.contains('INQUIRY')}">Loan Lists</a>
-            
+                <a th:href="@{/applications/dashboard}">Dashboard</a>            
                 <form th:action="@{/logout}" method="POST" style="display: inline;">
                     <button type="submit" class="btn-logout-nav">Logout</button>
                 </form>
@@ -84,9 +82,9 @@
                         </td>
                             <td>
                                 <a th:href="@{/loans/edit/{id}(id=${loan.id})}"
-                                th:if= "${userRole.contains('OPERATOR') and loan.status == 'DRAFT'}"
+                                th:if= "${userRole.contains('OPERATOR') and (loan.status == 'DRAFT' or loan.status == 'REJECTED')}"
+                                th:text="${loan.status == 'DRAFT' ? 'Continue' : 'Revisi'}"
                                 class="btn-action-proses">
-                                    Continue
                                 </a>
                             </td>
                         </tr>
@@ -97,6 +95,31 @@
                     </tbody>
                     </table>
                 </div>
+
+                <div class = "pagination-nav" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                    <span style="color: #666; font-size: 13px;"
+                        th:text="'Menampilkan halaman ' + (${currentPage} + 1) + ' dari ' + ${totalPages} + ' (' + ${totalItems} + ' total)'"
+>
+                        Menampilkan halaman 1 dari 1
+                    </span>
+
+                    <div>
+                        <a th:href= "@{/applications/dashboard(page=${currentPage - 1}, size=10)}"
+                        th:if= "${currentPage > 0}"
+                        class="btn-action-proses">
+                        <-
+                        </a>
+
+
+                        <a th:href= "@{/applications/dashboard(page=${currentPage + 1}, size=10)}"
+                        th:if= "${currentPage + 1 < totalPages}"
+                        class="btn-action-proses">
+                        ->
+                        </a>
+                    </div>
+
+                </div>
+
             </div>
         </div>
 

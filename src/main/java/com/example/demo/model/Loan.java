@@ -9,6 +9,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +19,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "loans")
@@ -25,6 +29,14 @@ public class Loan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @CreationTimestamp 
+    @Column (name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp 
+    @Column (name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @Column (name = "application_number", unique = true)
     private String applicationNumber;
