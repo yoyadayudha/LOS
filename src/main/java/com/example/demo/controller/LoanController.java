@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,6 @@ import com.example.demo.service.LoanService;
 import com.example.demo.validation.OnDraft;
 import com.example.demo.validation.OnSubmit;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.data.domain.Page;
@@ -144,11 +145,18 @@ public class LoanController {
     }
     
     @GetMapping("/loans/detail/{id}")
-    public String detailLoan(@PathVariable("id") Integer id, Model model,  HttpSession session) {
+    public String detailLoan(@PathVariable("id") Integer id, 
+    @RequestParam (name = "scored", defaultValue = "false") boolean scored, 
+    Model model) {
+
         LoanResponseDTO loanDTO = loanService.getLoanDetailForCurUser(id);
 
         model.addAttribute("loan", loanDTO);
         model.addAttribute("isAuthorized", loanDTO.isAuthorizedToApprove());
+
+        if(scored){
+            model.addAttribute("assessment", loanService.getAssessment(id));
+        }
 
         return "loan-detail";
     }
@@ -156,13 +164,19 @@ public class LoanController {
     @PostMapping("/loans/keputusan")
     public String prosesKeputusan(
         @RequestParam("loanId") Integer loanId,
-        // @RequestParam("userId") Integer userId,
         @RequestParam("action") String action,
-        @RequestParam("notes") String notes
+        @RequestParam("notes") String notes,
+        RedirectAttributes redirectAttributes
     ) {
+        try{
+            loanService.submitApprovalDecision(loanId, action, notes);
+        } catch (AccessDeniedException | IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("decisionError", e.getMessage());
+            return "redirect:/loans/detail/" + loanId + "?scored=true";
+        }
         loanService.submitApprovalDecision(loanId, action, notes);
 
-        return "redirect:/loans";
+        return "redirect:/applications/dashboard";
     }
     
 }

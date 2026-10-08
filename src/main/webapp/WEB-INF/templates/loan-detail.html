@@ -1,62 +1,34 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Detail Otorisasi Kredit</title>
-        <link th:href="@{/style.css}" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Review & Underwriting Kredit</title>
+        <link th:href= "@{/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href= "@{/style/css}" rel="stylesheet">
     </head>
+        <body>
+            <div class="containet py-4">
+                <h2 class="mb-4">Review Pengajuan Kredit</h2>
 
-    <body>
-        
-        <h2>Detail Pengajuan Kredit (Loan Origination System)</h2>
+                <div class="card-mb4">
+                    <div class = "card-header">Data Pengajuan</div>
+                    <div class = "card-body">
+                        <table class = "table table-bordered mb-0">
+                            <tbody>
+                                <tr>
+                                    <th>Nama Calon Debitur</th>
+                                    <td th:text="${loan.borrowerName}">Nama</td>
+                                </tr>
+                                <tr>
+                                    <th>Nominal Pengajuan</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <table border="1" cellpadding="10" cellspacing="0">
-            <tr>
-                <td><strong>Nama Calon Debitur</strong></td>
-                <td th:text="${loan.borrowerName}">Nama</td>
-            </tr>
-            <tr>
-                <td><strong>Nominal Pengajuan</strong></td>
-                <td th:text="'Rp ' + ${#numbers.formatInteger(loan.amount, 3, 'POINT')}">Rp 0</td>
-            </tr>
-            <tr>
-                <td><strong>Status Kredit</strong></td>
-                <td th:text="${loan.status}">PENDING</td>
-            </tr>
-
-            <hr>
-
-            <h3>Information Regarding (Approver)</h3>
-
-            <div th:if="${!isAuthorized}" style="color:red; background-color: #ffcccc; padding: 15px; border: 1px solid red; border-radius: 5px;">
-                You are not authorized to approve this!
             </div>
 
-            <div th:if="${isAuthorized}">
-                    <div style="color: green; background-color: #d4edda; padding: 15px; border: 1px solid green; border-radius: 5px; margin-bottom: 15px;"> 
-                    You are authorized to approve this!
-            </div>   
-
-            <h3>Form Keputusan Akhir</h3>
-            <form th:action="@{/loans/keputusan}" method="POST">
-
-                <input type="hidden" name="loanId" th:value="${loan.id}">
-
-                <div>
-                    <label for="">Catatan Alasan Analisis:</label>
-                    <br>
-                    <textarea name="notes" id="" rows="4" cols="50" placeholder="Ketik hasil analisis anda disini..." required></textarea>
-                </div>
-                <br>
-                <button type="submit" name = "action" value="APPROVED" style="background-color: green; color: white; padding: 5px 15px;">APPROVE</button>
-                <button type="submit" name = "action" value="REJECTED" style="background-color: red; color: white; padding: 5px 15px;">REJECT</button>
-            </form>
-        </div>
-
-        <br>
-        <br>
-        <a th:href="@{/applications/dashboard}"><- Kembali</a>
-
-        </table> 
-    </body>
+        </body>
 </html>

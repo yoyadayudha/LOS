@@ -397,9 +397,27 @@ public class LoanService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User currUserInDb = userRepository.findByUdomain(auth.getName());
+
+        if("APPROVED".equals(action)){
+            BigDecimal limit = getMaxApprovalLimit(currUserInDb);
+            BigDecimal amount = loan.getRequestedAmount();
+
+
+            if(amount != null && limit.compareTo(amount) < 0){
+                throw new AccessDeniedException(
+                    "Limit Approval Anda kurang untuk menyetujui plafon Rp " + amount.toPlainString()
+                );
+            }
+        }
+
+        if("REJECTED".equals(action)){
+            if(notes == null || notes.isBlank()){
+                throw new IllegalArgumentException("Alasan penolakan wajib");
+            }
+        }
+
         loan.setStatus(ApplicationStatus.valueOf(action));
         loanRepository.saveAndFlush(loan);
-
 
         LoanApproval logBaru = new LoanApproval();
         logBaru.setLoan(loan);
