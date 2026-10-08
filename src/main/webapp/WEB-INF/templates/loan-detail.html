@@ -22,10 +22,23 @@
                                 </tr>
                                 <tr>
                                     <th>Nominal Pengajuan</th>
+                                    <td th:text="'Rp ' + ${#numbers.formatInteger(loan.amount, 3, 'POINT')}">Rp 0</td>
+                                </tr>
+                                <tr>
+                                    <th>Status Kredit</th>
+                                    <td><span class="badge bg-secondary" th:text="${loan.status}">STATUS</span></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <div th:if= "${decisionError != null}" class="alert alert-danger" role="alert">
+                    <span th:text="${decisionError}">Error</span>
+                </div>
+
+                <div th:if= "${!isAuthorized}" class="alert alert-danger" role="alert">
+                    Anda tidak berwenang memproses pengajuan ini (di luar limit approval).
                 </div>
 
             </div>
