@@ -308,6 +308,11 @@ public class LoanService {
         return dto;
     }
 
+    public ApplicationFormRequestDTO getLoanFormForView(Integer id){
+        Loan loan = loanRepository.findById(id).orElseThrow();
+        return mapLoanToDto(loan);
+    }
+
     public ApplicationFormRequestDTO getLoanForEdit(Integer id){
         Loan loan = loanRepository.findById(id).orElseThrow();
 
@@ -369,17 +374,17 @@ public class LoanService {
         
     }
 
-    @Transactional 
+    @Transactional
     public Loan saveDraft(ApplicationFormRequestDTO dto){
 
         Loan loan = mapDtoToLoan(dto, ApplicationStatus.DRAFT);
 
-     
+    
         return loanRepository.save(loan);
         
     }
 
-    @Transactional 
+    @Transactional
     public Loan submitApplication(ApplicationFormRequestDTO dto){
 
         Loan loan = mapDtoToLoan(dto, ApplicationStatus.SUBMITTED);

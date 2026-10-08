@@ -144,11 +144,18 @@ public class LoanController {
     }
     
     @GetMapping("/loans/detail/{id}")
-    public String detailLoan(@PathVariable("id") Integer id, Model model,  HttpSession session) {
+    public String detailLoan(@PathVariable("id") Integer id, 
+        @PathVariable("id") , Integer id,
+        @RequestParam(name ="scored", defaultValue = "false") boolean scored,
+        Model model) {
         LoanResponseDTO loanDTO = loanService.getLoanDetailForCurUser(id);
 
         model.addAttribute("loan", loanDTO);
         model.addAttribute("isAuthorized", loanDTO.isAuthorizedToApprove());
+
+        if(scored){
+            model.addAttribute("assessment", loanService.getAssessment(id));
+        }
 
         return "loan-detail";
     }
