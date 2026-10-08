@@ -34,7 +34,7 @@ import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class LoanService {
     
     private final LoanRepository loanRepository;

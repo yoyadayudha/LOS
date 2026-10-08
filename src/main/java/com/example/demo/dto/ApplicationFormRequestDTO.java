@@ -25,8 +25,8 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-@Data 
-@NoArgsConstructor 
+@Data
+@NoArgsConstructor
 @ValidLoanApplication (groups = {OnSubmit.class})
 public class ApplicationFormRequestDTO {
     private Integer loanId;
@@ -99,7 +99,6 @@ public class ApplicationFormRequestDTO {
     @NotNull (message = "Status agunan wajib dipilih", groups = {OnSubmit.class})
     private Boolean hasCollateral;
 
-    
     private CollateralType collateralType;
     private BigDecimal collateralValue;
 
