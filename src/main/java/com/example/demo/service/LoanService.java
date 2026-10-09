@@ -308,6 +308,12 @@ public class LoanService {
         return dto;
     }
 
+    public ApplicationFormRequestDTO getLoanForView(Integer id){
+        Loan loan = loanRepository.findById(id).orElseThrow();
+
+        return mapLoanToDto(loan);
+    }
+
     public ApplicationFormRequestDTO getLoanForEdit(Integer id){
         Loan loan = loanRepository.findById(id).orElseThrow();
 

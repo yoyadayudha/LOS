@@ -86,6 +86,12 @@
                                 th:text="${loan.status == 'DRAFT' ? 'Continue' : 'Revisi'}"
                                 class="btn-action-proses">
                                 </a>
+
+                                <a th:href="@{/loans/detail/{id}(id=${loan.id})}"
+                                th:if= "${userRole.contains('APPROVER') and (loan.status == 'SUBMITTED')}"
+                                class="btn-action-proses">
+                                Review
+                                </a>
                             </td>
                         </tr>
             

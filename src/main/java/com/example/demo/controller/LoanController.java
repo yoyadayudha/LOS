@@ -153,6 +153,8 @@ public class LoanController {
 
         model.addAttribute("loan", loanDTO);
         model.addAttribute("isAuthorized", loanDTO.isAuthorizedToApprove());
+        model.addAttribute("applicationForm", loanService.getLoanForView(id));
+        model.addAttribute("tenorOptions", TENOR_OPTIONS);
 
         if(scored){
             model.addAttribute("assessment", loanService.getAssessment(id));
