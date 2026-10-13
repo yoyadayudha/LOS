@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>Daftar Pengajuan Kredit</title>
         <link th:href="@{/style.css}" rel="stylesheet">
+        <link th:href= "@{/css/bootstrap.min.css}" rel = "stylesheet">
     </head>
 
     <body>
@@ -20,6 +21,11 @@
         </nav>
         <h2></h2>
         <div class="container">
+
+            <div th:if= "${editError != null}"
+                class="alert alert-danger" role="alert">
+                <span th:text="${editError}">Error</span>
+            </div>
 
             <div th:if= "${summary != null}" class = "summary-cards" style="display: flex; gap: 16px; margin-bottom: 20px;">
                 <div class="summary-card">
@@ -85,6 +91,12 @@
                                 th:if= "${userRole.contains('OPERATOR') and (loan.status == 'DRAFT' or loan.status == 'REJECTED')}"
                                 th:text="${loan.status == 'DRAFT' ? 'Continue' : 'Revisi'}"
                                 class="btn-action-proses">
+                                </a>
+
+                                <a th:href="@{/loans/detail/{id}(id=${loan.id})}"
+                                th:if= "${userRole.contains('APPROVER') and (loan.status == 'SUBMITTED')}"
+                                class="btn-action-proses">
+                                Review
                                 </a>
                             </td>
                         </tr>

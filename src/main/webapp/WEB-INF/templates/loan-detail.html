@@ -1,62 +1,227 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Detail Otorisasi Kredit</title>
-        <link th:href="@{/style.css}" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Form Pengajuan kredit</title>
+            <link th:href= "@{/css/bootstrap.min.css}" rel = "stylesheet">
+            <link th:href= "@{/style.css}" rel = "stylesheet">
     </head>
+        <body>
+            <div class ="container py-4">
+                <h2>Form Pengajuan Kredit</h2>
 
-    <body>
-        
-        <h2>Detail Pengajuan Kredit (Loan Origination System)</h2>
+                <form th:object="${applicationForm}">
 
-        <table border="1" cellpadding="10" cellspacing="0">
-            <tr>
-                <td><strong>Nama Calon Debitur</strong></td>
-                <td th:text="${loan.borrowerName}">Nama</td>
-            </tr>
-            <tr>
-                <td><strong>Nominal Pengajuan</strong></td>
-                <td th:text="'Rp ' + ${#numbers.formatInteger(loan.amount, 3, 'POINT')}">Rp 0</td>
-            </tr>
-            <tr>
-                <td><strong>Status Kredit</strong></td>
-                <td th:text="${loan.status}">PENDING</td>
-            </tr>
+                    <input type="hidden" th:field="*{loanId}">
 
-            <hr>
+                    <div th:if= "${violations != null and !violations.isEmpty()}" class="alert alert-danger">
+                        <ul>
+                            <li th:each= "v: ${violations}" th:text="${v.propertyPath + ': ' + v.message}"></li>
+                        </ul>
+                    </div>
 
-            <h3>Information Regarding (Approver)</h3>
+                    <h4>Section A - Data Debitur</h4>
 
-            <div th:if="${!isAuthorized}" style="color:red; background-color: #ffcccc; padding: 15px; border: 1px solid red; border-radius: 5px;">
-                You are not authorized to approve this!
+                    <div class="mb-3">
+                        <label class="form-label">NIK</label>
+                        <input type="text" class="form-control" th:field="*{nik}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" th:field="*{fullName}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" th:field="*{email}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">No. Telepon</label>
+                        <input type="text" class="form-control" th:field="*{phone}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Lahir</label>
+                         <input type="date" class="form-control" name="birthDate" disabled
+                        th:value="${applicationForm.birthDate != null ? #temporals.format(applicationForm.birthDate, 'yyyy-MM-dd') : ''}">
+                        
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Kelamin</label>
+                        <select class="form-control" th:field="*{gender}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "g :${T(com.example.demo.model.Gender).values()}" th:value="${g}" th:text="${g}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Alamat</label>
+                        <textarea class="form-control" th:field="*{address}" disabled></textarea>
+                    </div>
+
+                    <h4>Section B - Data Pekerjaan & Keuangan</h4>
+
+                    <div class="mb-3">
+                        <label class = "form-label">Nama Perusahaan</label>
+                        <input type="text" class = "form-control" th:field="*{companyName}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status Kepegawaian</label>
+                        <select class="form-control" th:field="*{employmentType}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "e :${T(com.example.demo.model.EmploymentType).values()}" th:value="${e}" th:text="${e}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Lama Bekerja (bulan)</label>
+                        <input type="number" class = "form-control" th:field="*{workDurationMonths}" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Pendapatan Bersih per Bulan</label>
+                        <input type="number" step="any" class = "form-control" th:field="*{monthlyIncome}" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Cicilan di Tempat Lain</label>
+                        <input type="number" step="any" class = "form-control" th:field="*{existingInstallments}" disabled>
+                    </div>
+                    
+
+                    <h4>Section C - Data Pengajuan Pinjaman</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Produk</label>
+                        <select class="form-control" th:field="*{productType}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "p :${T(com.example.demo.model.ProductType).values()}" th:value="${p}" th:text="${p}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class = "form-label">Nominal Pinjaman</label>
+                        <input type="number" step="any" class = "form-control" th:field="*{requestedAmount}" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class = "form-label">Tenor (bulan)</label>
+                        <select class="form-control" th:field="*{tenorMonths}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option th:each="t : ${tenorOptions}" th:value="${t}" th:text="${t}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Skema Bunga</label>
+                        <select class="form-control" th:field="*{interestScheme}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "i :${T(com.example.demo.model.InterestScheme).values()}" th:value="${i}" th:text="${i}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tujuan Penggunaan</label>
+                        <textarea class="form-control" th:field="*{loanPurpose}" disabled></textarea>
+                    </div>
+
+                    <h4>Section D - Data Agunan</h4>
+
+                    <div class="mb-3">
+                        <label class="form-label">Menggunakan Agunan?</label>
+                        <select class="form-control" th:field="*{hasCollateral}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option value="true">Ya</option>
+                            <option value="false">Tidak</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Jenis Agunan</label>
+                        <select class="form-control" th:field="*{collateralType}" disabled>
+                            <option value="">-- Pilih --</option>
+                            <option th:each= "c :${T(com.example.demo.model.CollateralType).values()}" th:value="${c}" th:text="${c}"></option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class = "form-label">Nilai Agunan</label>
+                        <input type="number" step="any" class = "form-control" th:field="*{collateralValue}" disabled>
+                    </div>
+
+                    </form>
+
+                   <div th:if= "${decisionError != null}" class="alert alert-danger">
+                        <span th:text="${decisionError}">Error</span>
+                   </div>
+
+                   <div th:if= "${!isAuthorized}" class="alert alert-warning">
+                        Anda tidak berwenang memproses pengajuan ini (di luar limit approval)!
+                   </div>
+
+                   <div th:if= "${isAuthorized}" class="card mt-4">
+                        <div class="card-header"><strong>Section E - Underwriting Assessment</strong></div>
+                        <div class = "card-body">
+
+                            <div th:if= "${assessment == null}">
+                                <p class = "text-muted">Klik tombol untuk menghitung skor underwriting</p>
+                                <a th:href= "@{/loans/detail/{id}(id=${loan.id}, scored=true)}" class="btn btn-primary">
+                                    Check Recommendation
+                                </a>
+                            </div>
+
+                            <div th:if= "${assessment != null}">
+                                <table class = "table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 40%;">DSR</th>
+                                            <td th:text="${#numbers.formatDecimal(assessment.dsr, 1, 2)} + ' %'">0 %</td>
+                                        </tr>
+                                        <tr>
+                                            <th>LTV</th>
+                                            <td th:text="${assessment.ltv != null ? #numbers.formatDecimal(assessment.ltv, 1, 2) + ' %' : '- (tanpa agunan)'}">0 %</td>
+                                        </tr>
+                                        <tr>
+                                            <th>System Recommendation</th>
+                                            <td>
+                                                <span class = "badge"
+                                                th:classappend="${assessment.recommendation == 'FAST_PATH_APPROVE'} ? 'bg-success'
+                                                            : (${assessment.recommendation == 'MANUAL_REVIEW'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                                            th:text="${assessment.recommendation}">REC</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h5 class="mt-5">Form Keputusan Akhir</h5>
+                                <form th:action="@{/loans/keputusan}" method = "POST">
+                                    <input type="hidden" name="loanId" th:value="${loan.id}">
+                                    <div class="mb-3">
+                                        <label class ="form-label">Catatan Analisis</label>
+                                        <textarea name="notes" class ="form-control" rows = "4" placeholder="Ketik catatan analisis anda..."></textarea>
+                                    </div>
+
+                                    <button type="submit" name="action" value="APPROVED" class="btn btn-success">Approve</button>
+                                    <button type="submit" name="action" value="REJECTED" class="btn btn-danger">Reject</button>
+                                </form>
+
+                            </div>
+ 
+                        </div>
+                   </div>
+
+                   <div class="mt-4">
+                        <a th:href= "@{/applications/dashboard}" class = "btn btn-link ps-0">Kembali ke Dashboard</a>
+                   </div>
+                    
             </div>
 
-            <div th:if="${isAuthorized}">
-                    <div style="color: green; background-color: #d4edda; padding: 15px; border: 1px solid green; border-radius: 5px; margin-bottom: 15px;"> 
-                    You are authorized to approve this!
-            </div>   
+            <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
-            <h3>Form Keputusan Akhir</h3>
-            <form th:action="@{/loans/keputusan}" method="POST">
-
-                <input type="hidden" name="loanId" th:value="${loan.id}">
-
-                <div>
-                    <label for="">Catatan Alasan Analisis:</label>
-                    <br>
-                    <textarea name="notes" id="" rows="4" cols="50" placeholder="Ketik hasil analisis anda disini..." required></textarea>
-                </div>
-                <br>
-                <button type="submit" name = "action" value="APPROVED" style="background-color: green; color: white; padding: 5px 15px;">APPROVE</button>
-                <button type="submit" name = "action" value="REJECTED" style="background-color: red; color: white; padding: 5px 15px;">REJECT</button>
-            </form>
-        </div>
-
-        <br>
-        <br>
-        <a th:href="@{/applications/dashboard}"><- Kembali</a>
-
-        </table> 
-    </body>
+        </body>
 </html>
