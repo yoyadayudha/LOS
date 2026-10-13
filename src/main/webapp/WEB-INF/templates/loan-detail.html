@@ -11,7 +11,7 @@
             <div class ="container py-4">
                 <h2>Form Pengajuan Kredit</h2>
 
-                <form th:action= "@{/loans/simpan-pengajuan}" th:object="${applicationForm}" method="POST">
+                <form th:object="${applicationForm}">
 
                     <input type="hidden" th:field="*{loanId}">
 
@@ -154,11 +154,13 @@
                         <input type="number" step="any" class = "form-control" th:field="*{collateralValue}" disabled>
                     </div>
 
+                    </form>
+
                    <div th:if= "${decisionError != null}" class="alert alert-danger">
                         <span th:text="${decisionError}">Error</span>
                    </div>
 
-                   <div thth:if= "${!isAuthorized}" class="alert alert-warning">
+                   <div th:if= "${!isAuthorized}" class="alert alert-warning">
                         Anda tidak berwenang memproses pengajuan ini (di luar limit approval)!
                    </div>
 
@@ -166,12 +168,57 @@
                         <div class="card-header"><strong>Section E - Underwriting Assessment</strong></div>
                         <div class = "card-body">
 
-                            <div></div>
+                            <div th:if= "${assessment == null}">
+                                <p class = "text-muted">Klik tombol untuk menghitung skor underwriting</p>
+                                <a th:href= "@{/loans/detail/{id}(id=${loan.id}, scored=true)}" class="btn btn-primary">
+                                    Check Recommendation
+                                </a>
+                            </div>
+
+                            <div th:if= "${assessment != null}">
+                                <table class = "table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 40%;">DSR</th>
+                                            <td th:text="${#numbers.formatDecimal(assessment.dsr, 1, 2)} + ' %'">0 %</td>
+                                        </tr>
+                                        <tr>
+                                            <th>LTV</th>
+                                            <td th:text="${assessment.ltv != null ? #numbers.formatDecimal(assessment.ltv, 1, 2) + ' %' : '- (tanpa agunan)'}">0 %</td>
+                                        </tr>
+                                        <tr>
+                                            <th>System Recommendation</th>
+                                            <td>
+                                                <span class = "badge"
+                                                th:classappend="${assessment.recommendation == 'FAST_PATH_APPROVE'} ? 'bg-success'
+                                                            : (${assessment.recommendation == 'MANUAL_REVIEW'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                                            th:text="${assessment.recommendation}">REC</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h5 class="mt-5">Form Keputusan Akhir</h5>
+                                <form th:action="@{/loans/keputusan}" method = "POST">
+                                    <input type="hidden" name="loanId" th:value="${loan.id}">
+                                    <div class="mb-3">
+                                        <label class ="form-label">Catatan Analisis</label>
+                                        <textarea name="notes" class ="form-control" rows = "4" placeholder="Ketik catatan analisis anda..."></textarea>
+                                    </div>
+
+                                    <button type="submit" name="action" value="APPROVED" class="btn btn-success">Approve</button>
+                                    <button type="submit" name="action" value="REJECTED" class="btn btn-danger">Reject</button>
+                                </form>
+
+                            </div>
  
                         </div>
                    </div>
+
+                   <div class="mt-4">
+                        <a th:href= "@{/applications/dashboard}" class = "btn btn-link ps-0">Kembali ke Dashboard</a>
+                   </div>
                     
-                </form>
             </div>
 
             <script th:src="@{/js/bootstrap.bundle.min.js}"></script>

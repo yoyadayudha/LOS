@@ -129,8 +129,16 @@ public class LoanController {
     }
 
     @GetMapping("/loans/edit/{id}")
-    public String formEditDraft(@PathVariable("id") Integer id, Model model) {
-        ApplicationFormRequestDTO dto = loanService.getLoanForEdit(id);
+    public String formEditDraft(@PathVariable("id") Integer id, Model model,
+           RedirectAttributes redirectAttributes) {
+        ApplicationFormRequestDTO dto;
+
+        try {
+            dto = loanService.getLoanForEdit(id);
+        } catch (AccessDeniedException | IllegalStateException e){
+            redirectAttributes.addFlashAttribute("editError", e.getMessage());
+            return "redirect:/applications/dashboard";
+        }
 
         model.addAttribute("applicationForm", dto);
         model.addAttribute("tenorOptions", TENOR_OPTIONS);
@@ -167,7 +175,7 @@ public class LoanController {
     public String prosesKeputusan(
         @RequestParam("loanId") Integer loanId,
         @RequestParam("action") String action,
-        @RequestParam("notes") String notes,
+        @RequestParam(name = "notes", required = false) String notes,
         RedirectAttributes redirectAttributes
     ) {
         try{
@@ -176,7 +184,6 @@ public class LoanController {
             redirectAttributes.addFlashAttribute("decisionError", e.getMessage());
             return "redirect:/loans/detail/" + loanId + "?scored=true";
         }
-        loanService.submitApprovalDecision(loanId, action, notes);
 
         return "redirect:/applications/dashboard";
     }

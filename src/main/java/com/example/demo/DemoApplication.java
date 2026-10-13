@@ -255,6 +255,29 @@ public class DemoApplication {
                 l5.setStatus(ApplicationStatus.REJECTED);
                 l5.setCreatedBy(10);
                 loanRepository.save(l5);
+
+                Debtor[] debtorPool = { hitagi, araragi, hanekawa };
+                for (int i = 6; i <= 18; i++) {
+                    Loan ln = new Loan();
+                    ln.setApplicationNumber(String.format("APP-20261001-%05d", i));
+                    ln.setDebtor(debtorPool[i % 3]);
+                    ln.setCompanyName("PT Demo Pagination " + i);
+                    ln.setEmploymentType(EmploymentType.PERMANENT);
+                    ln.setWorkDurationMonths(12 + i);
+                    ln.setMonthlyIncome(new BigDecimal("10000000"));
+                    ln.setExistingInstallments(new BigDecimal("0"));
+                    ln.setProductType(ProductType.KPR);
+                    ln.setRequestedAmount(new BigDecimal("20000000").add(new BigDecimal(i).multiply(new BigDecimal("1000000"))));
+                    ln.setTenorMonths(60);
+                    ln.setInterestScheme(InterestScheme.ANNUITY);
+                    ln.setLoanPurpose("Pengajuan demo nomor " + i);
+                    ln.setHasCollateral(true);
+                    ln.setCollateralType(CollateralType.PROPERTY);
+                    ln.setCollateralValue(new BigDecimal("100000000"));
+                    ln.setStatus(ApplicationStatus.DRAFT);
+                    ln.setCreatedBy(10);
+                    loanRepository.save(ln);
+                }
             }
 
         };
