@@ -42,18 +42,17 @@ public class LoanService {
     private final UserRepository userRepository;
     private final DebtorRepository debtorRepository;
 
-    
+    private User getCurrentUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByUdomain(auth.getName());
+    }
 
     public LoanResponseDTO getLoanDetailForCurUser(Integer id){
         Loan loan = loanRepository.findById(id).orElseThrow();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        String currUsername = auth.getName();
-
-        User userInDb = userRepository.findByUdomain(currUsername);
+        User currUser = getCurrentUser();
         
-        BigDecimal maxUserApprovalLimit = getMaxApprovalLimit(userInDb);
+        BigDecimal maxUserApprovalLimit = getMaxApprovalLimit(currUser);
 
         boolean bolehProses = maxUserApprovalLimit.compareTo(BigDecimal.ZERO) > 0
                               && loan.getRequestedAmount() != null
@@ -66,8 +65,7 @@ public class LoanService {
 
 
     public Page<LoanResponseDTO> getOperatorTasks(Pageable pageable){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currUser = userRepository.findByUdomain(auth.getName());
+        User currUser = getCurrentUser();
 
         if(currUser == null){
             return Page.empty(pageable);
@@ -80,8 +78,7 @@ public class LoanService {
     }
 
     public Page<LoanResponseDTO> getApproverTasks(Pageable pageable){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currUser = userRepository.findByUdomain(auth.getName());
+        User currUser = getCurrentUser();
 
         if(currUser == null){
             return Page.empty(pageable);
@@ -317,8 +314,7 @@ public class LoanService {
     public ApplicationFormRequestDTO getLoanForEdit(Integer id){
         Loan loan = loanRepository.findById(id).orElseThrow();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currUser = userRepository.findByUdomain(auth.getName());
+        User currUser = getCurrentUser();
 
         if(currUser == null || loan.getCreatedBy() == null
             || !loan.getCreatedBy().equals(currUser.getId())){
@@ -363,8 +359,7 @@ public class LoanService {
             loan.setApplicationNumber(generateApplicationNumber());
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currUser = userRepository.findByUdomain(auth.getName());
+        User currUser = getCurrentUser();
 
         if(currUser != null){
             loan.setCreatedBy(currUser.getId());
@@ -401,8 +396,7 @@ public class LoanService {
     public void submitApprovalDecision(Integer loanId, String action, String notes){
         Loan loan = loanRepository.findById(loanId).orElseThrow();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currUserInDb = userRepository.findByUdomain(auth.getName());
+        User currUserInDb = getCurrentUser();
 
         if("APPROVED".equals(action)){
             BigDecimal limit = getMaxApprovalLimit(currUserInDb);
