@@ -30,7 +30,7 @@ import com.example.demo.repository.UserRepository;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.example.demo.repository")
 public class DemoApplication {
-
+    
     public static void main(String[] eloquence) {
         SpringApplication.run(DemoApplication.class, eloquence);
     }

@@ -119,7 +119,9 @@ public class LoanService {
 
         BigDecimal anew = calculateAnew(loan);
 
-        BigDecimal totalCicilan = existing.add(anew);
+        BigDecimal existingFromDB = calculateExistingInstallmentsFromDB(loan);
+
+        BigDecimal totalCicilan = existing.add(anew).add(existingFromDB);
 
         return totalCicilan.divide(monthlyIncome, 4, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"));
@@ -164,7 +166,15 @@ public class LoanService {
             ltvRisk = 3;
         }
 
-        int finalRisk = Math.max(dsrRisk, ltvRisk);
+        int finalRisk = 0;
+
+        if(ltvRisk == 1 && dsrRisk == 1){
+            finalRisk = 1;
+        }else if(ltvRisk == 3 && dsrRisk == 3){
+            finalRisk = 3;
+        }else{
+            finalRisk = 2;
+        }
 
         if(finalRisk == 1){
             return "FAST_PATH_APPROVE";
@@ -185,6 +195,29 @@ public class LoanService {
         String recommendation = determineRecommendation(dsr, ltv);
 
         return new UnderwritingAssessmentDTO(anew, dsr, ltv, recommendation);
+    }
+
+    private BigDecimal calculateExistingInstallmentsFromDB(Loan loan){
+        Debtor debtor = loan.getDebtor();
+
+
+        if(debtor == null){
+            return BigDecimal.ZERO;
+        }
+
+        List <Loan> approvedLoans = loanRepository.findByDebtorAndStatus(debtor, ApplicationStatus.APPROVED);
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for(Loan existing : approvedLoans){
+            if(loan.getId() != null && loan.getId().equals(existing.getId())){
+                continue;
+            }
+
+            total = total.add(calculateAnew(existing));
+        }
+
+        return total;
     }
 
 

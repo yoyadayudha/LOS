@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.example.demo.model.Debtor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,5 +23,7 @@ public interface LoanRepository extends JpaRepository<Loan, Integer>{
     
     @Query ("SELECT l FROM Loan l WHERE l.status = :status AND l.requestedAmount <= :limit")
     Page <Loan> findApproverEligibleTasks(@Param("status") ApplicationStatus status, @Param("limit") BigDecimal limit,  Pageable pageable);
+
+    List <Loan> findByDebtorAndStatus(Debtor debtor, ApplicationStatus status);
 
 }
